@@ -8,4 +8,4 @@ Not completed components plz put in
 https://wanyeung.notion.site/2042-Group-Project-puzzle-cpp-15d6290857c240b58af7cc6d30ca29f9
 
 To compile our code: 
-jdoodle.com/a/4zs9
+https://www.jdoodle.com/a/4zs9
