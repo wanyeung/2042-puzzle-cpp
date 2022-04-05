@@ -26,6 +26,10 @@ class Piece{
 			column = '\0'; row = 0;
 			placed = 0;
 		}
+		
+		void setLetter(char l){
+		    letter = l;
+		}
 
         //Get function
 		int getDigit(char const NSEW){
@@ -37,6 +41,10 @@ class Piece{
 				default: cout << "Error";				
 			}
 			return EXIT_SUCCESS;
+		}
+		
+		char getLetter(){
+		    return letter;
 		}
 
 	private:
@@ -120,8 +128,38 @@ void game(){
 		}
     	
 	solution[pieceID].setPiece(l, N, S, E, W);
-	cout << l << " " << N << " " << S << " " << E << " " << W << " done " <<  pieceID;
+	cout << l << " " << N << " " << S << " " << E << " " << W << " done " <<  pieceID << endl;
     }
+    
+    //Transforming the pieces
+    Piece puzzle[totalPiece] = {};
+  
+    //Initialized letter, digit
+    for(int pieceID=0;  pieceID < totalPiece; pieceID++){
+        
+        puzzle[pieceID].setPiece(
+            65 + rand() % totalPiece, 
+            solution[pieceID].getDigit('N') ,
+            solution[pieceID].getDigit('S') ,
+            solution[pieceID].getDigit('E') ,
+            solution[pieceID].getDigit('W') 
+            );
+    }    
+    
+    //Transforming the letter
+    for(int pieceID=0;  pieceID < totalPiece; pieceID++){
+        char l = 65 + rand() % totalPiece;
+        for(int i=1; i < totalPiece; i++){
+         cout << puzzle[pieceID].getLetter() << " " << puzzle[pieceID+i].getLetter() << endl;
+         while(puzzle[pieceID].getLetter() == puzzle[pieceID+i].getLetter() || 
+                puzzle[pieceID].getLetter() == puzzle[pieceID-i].getLetter()){
+            l = 65 + rand() % totalPiece;
+            cout << l << " ";
+            puzzle[pieceID].setLetter(l);
+         }
+        }
+    }
+
     return;
 }
 
