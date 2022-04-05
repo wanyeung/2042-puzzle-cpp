@@ -1,10 +1,12 @@
 #include <iostream>
 #include <iomanip>
+#include <cstdlib>
 using namespace std;
 
 void welcome();
 void menu();
 void game();
+void GenerateNSEW(int &, int &, int &, int &);
 void config();
 void feature();
 void credit();
@@ -15,13 +17,27 @@ int totalPiece = 15, digitFloor = 0, digitCeiling = 5;
 class Piece{
 	public:
 		//Constructor function
-		Piece(char l, int N, int S, int E, int W, char c, int row){
+		Piece(){}
+		
+		//Set function
+		void setPiece(char l, int N, int S, int E, int W){
 			letter = l;
 			digitN = N; digitS = S; digitE = E; digitW = W;
 			column = '\0'; row = 0;
 			placed = 0;
 		}
 
+        //Get function
+		int getDigit(char const NSEW){
+			switch(NSEW){
+				case 'N': return digitN; break;
+				case 'S': return digitS; break;
+				case 'E': return digitE; break;
+				case 'W': return digitW; break;
+				default: cout << "Error";				
+			}
+			return EXIT_SUCCESS;
+		}
 
 	private:
 		char detail[2][2];
@@ -51,6 +67,7 @@ void welcome(){
 	cout << "[Welcome Message designed by your group]\n";
 	cout << "\n";
 	return;
+	
 }
 
 //Main Menu
@@ -75,12 +92,57 @@ void menu(){
 		case 5 : cout<< endl << endl; exits();  break;
 		default: cout << endl << "Please input a number from 1 to 5." << endl << endl; menu();
 	}
+	
 	return;
 }
 
 //Start the game
 void game(){
+  // Generate the solution array with puzzles pieces
+  Piece solution[totalPiece] = {};
   
+  for(int pieceID=0; pieceID < totalPiece; pieceID++){
+    int l = pieceID + 65, N = 0, S = 0, E = 0, W = 0;
+    
+    //Generate the digitNSEW for piece1
+	if(pieceID == 0)
+		GenerateNSEW(N, S, E, W);
+    //Generate all left pieces except piece1 
+	else if(pieceID % 5 != 0){ 
+				GenerateNSEW(N, S, E, W); 
+				W = solution[pieceID-1].getDigit('E');		
+		}
+	else{ 
+	    //Generate all other pieces
+				GenerateNSEW(N, S, E, W); 
+				N = solution[pieceID-5].getDigit('S');
+				E = solution[pieceID-1].getDigit('W');
+		}
+    	
+	solution[pieceID].setPiece(l, N, S, E, W);
+	cout << l << " " << N << " " << S << " " << E << " " << W << " done " <<  pieceID;
+    }
+    return;
+}
+
+//
+void GenerateNSEW(int & N, int & S, int & E, int & W){
+	for(int i = 0, randNum; i < 4; i++){
+	    if((digitCeiling - digitFloor) == 0)
+	        randNum = digitFloor;
+	    else 
+	        randNum = digitFloor + rand() % (digitCeiling - digitFloor + 1);
+	    
+	    // Assign the number generated randomly to digitNSEW 
+	    switch(i){
+			case 0: N = randNum; break;
+			case 1: S = randNum; break;
+			case 2: E = randNum; break;
+			case 3: W = randNum; break;
+			default: cout << "Error";
+		}
+	}
+	return;
 }
 
 //setting
