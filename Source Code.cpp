@@ -62,8 +62,8 @@ void game(){
 void config(){
 	int option, pieceNum, rangeNum1, rangeNum2;
 	cout << "\n*** Settings Menu ***" << endl
-		<< "[1] Change Number of puzzle piece \tCurrent: " << totalPiece << endl
-		<< "[2] Change Range of random number \tCurrent: " << digitFloor << " - " << digitCeiling << endl
+		<< "[1] Change Number of puzzle piece \n\t-> Current: " << totalPiece << endl
+		<< "[2] Change Range of random number \n\t-> Current: " << digitFloor << " - " << digitCeiling << endl
 		<< "[3] Return to Main Menu" << endl
 		<< "***************************" << endl << endl
 		<< "Option (1-3): ";
