@@ -12,6 +12,31 @@ void exits();
 
 int totalPiece = 15, digitFloor = 0, digitCeiling = 5;
 
+class Piece{
+	public:
+		//Constructor function
+		Piece(char l, int N, int S, int E, int W, char c, int row){
+			letter = l;
+			digitN = N; digitS = S; digitE = E; digitW = W;
+			column = '\0'; row = 0;
+			placed = 0;
+		}
+
+
+	private:
+		char detail[2][2];
+
+		//Piece Appearance
+		char letter; // from A-Z
+		int digitN,digitS,digitE,digitW; // from 0-9
+	
+		//Location 
+		char column;
+		int row;
+		bool placed;
+};
+
+
 int main()
 {
 	
