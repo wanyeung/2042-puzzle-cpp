@@ -76,10 +76,11 @@ void config(){
 			cin >> pieceNum;
 
 			//Checking for Valid input
-			(pieceNum >= 1 && pieceNum <= 25)?
-				global::totalPiece = pieceNum:
+			if(pieceNum >= 1 && pieceNum <= 25)
+				totalPiece = pieceNum;
+			else
 				cout << "Please input a number from 1 to 25";
-		}while(pieceNum < 1 || pieceNum > 25)
+		}while(pieceNum < 1 || pieceNum > 25);
 		
 		break;
 	case 2: 
@@ -91,16 +92,20 @@ void config(){
 			cin >> 	rangeNum2;
 
 			//Checking for Valid input
-			(rangeNum1 >= 0 && rangeNum2 >= rangeNum1 && rangeNum2 <= 9)?
-				(rangeNum1 = global::digitFloor;rangeNum2 = global::digitCeiling;) :
+			if(rangeNum1 >= 0 && rangeNum2 >= rangeNum1 && rangeNum2 <= 9){
+				digitFloor = rangeNum1;
+				digitCeiling = rangeNum2;
+			}
+			else
 				cout << "Please input a number from 0 to 9 for each number";
-		}while(rangeNum1 < 0 || pieceNum > 9)
+		}while(rangeNum1 < 0 || pieceNum > 9);
 
 		break;
 
 	case 3: main(); break;
 
-	default: cout << "Please input a number from 1 to 5." << endl << endl << config() ;
+	default: cout << "Please input a number from 1 to 5." << endl << endl;
+            config();
     }
 }
 
