@@ -128,7 +128,10 @@ void game(){
 		}
     	
 	solution[pieceID].setPiece(l, N, S, E, W);
+	/*
+    //For Debuging
 	cout << l << " " << N << " " << S << " " << E << " " << W << " done " <<  pieceID << endl;
+	*/
     }
     
     //Transforming the pieces
@@ -144,22 +147,37 @@ void game(){
             solution[pieceID].getDigit('E') ,
             solution[pieceID].getDigit('W') 
             );
+        /*
+        //For Debuging
+        cout << puzzle[pieceID].getLetter() << " ";
+        */
     }    
     
+    cout << endl;
+    
     //Transforming the letter
-    for(int pieceID=0;  pieceID < totalPiece; pieceID++){
-        char l = 65 + rand() % totalPiece;
-        for(int i=1; i < totalPiece; i++){
-         cout << puzzle[pieceID].getLetter() << " " << puzzle[pieceID+i].getLetter() << endl;
-         while(puzzle[pieceID].getLetter() == puzzle[pieceID+i].getLetter() || 
-                puzzle[pieceID].getLetter() == puzzle[pieceID-i].getLetter()){
-            l = 65 + rand() % totalPiece;
-            cout << l << " ";
-            puzzle[pieceID].setLetter(l);
-         }
+    
+    for(int pieceID=1; pieceID < totalPiece;){
+        bool change = 0;
+        
+        for(int i = 0; i < (totalPiece-1); i++){
+            if(puzzle[pieceID].getLetter() == puzzle[i].getLetter() && i!= pieceID){
+                change = 1;
+            }
         }
+        
+        if(change == 0)
+            pieceID++;
+        else
+            puzzle[pieceID].setLetter(65 + rand() % totalPiece);
     }
-
+    
+    /*
+    //For Debuging
+     for(int pieceID=0;  pieceID < totalPiece; pieceID++)
+        cout << endl << puzzle[pieceID].getLetter() << " ";
+    */
+    
     return;
 }
 
