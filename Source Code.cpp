@@ -168,8 +168,10 @@ void game(){
         
         if(change == 0)
             pieceID++;
-        else
-            puzzle[pieceID].setLetter(65 + rand() % totalPiece);
+        else{
+		puzzle[pieceID].setLetter(65 + rand() % totalPiece);
+		solution[pieceID].setLetter(puzzle[pieceID].getLetter());   //Save puzzle[] to solution[]
+	}
     }
     
     /*
@@ -177,7 +179,7 @@ void game(){
      for(int pieceID=0;  pieceID < totalPiece; pieceID++)
         cout << endl << puzzle[pieceID].getLetter() << " ";
     */
-    
+
     return;
 }
 
