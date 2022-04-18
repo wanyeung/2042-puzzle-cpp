@@ -59,7 +59,7 @@ class Piece {
 public:
 	//Constructor function
 	Piece() {}
-
+ 
 	//Set function
 	void setPiece(char l, int N, int S, int E, int W) {
 		letter = l;
