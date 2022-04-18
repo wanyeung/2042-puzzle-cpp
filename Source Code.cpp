@@ -107,7 +107,7 @@ void menu(){
 //Start the game
 void game(){
   // Generate the solution array with puzzles pieces
-  Piece solution[totalPiece] = {};
+  Piece solution[totalPiece];
   
   for(int pieceID=0; pieceID < totalPiece; pieceID++){
     int l = pieceID + 65, N = 0, S = 0, E = 0, W = 0;
@@ -135,7 +135,7 @@ void game(){
     }
     
     //Transforming the pieces
-    Piece puzzle[totalPiece] = {};
+    Piece puzzle[totalPiece];
   
     //Initialized letter, digit
     for(int pieceID=0;  pieceID < totalPiece; pieceID++){
