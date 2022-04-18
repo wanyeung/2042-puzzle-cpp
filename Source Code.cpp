@@ -221,8 +221,10 @@ void config(){
 			cin >> pieceNum;
 
 			//Checking for Valid input
-			if(pieceNum >= 1 && pieceNum <= 25)
+			if(pieceNum >= 1 && pieceNum <= 25) {
 				totalPiece = pieceNum;
+				menu();
+		        }
 			else
 				cout << "Please input a number from 1 to 25";
 		}while(pieceNum < 1 || pieceNum > 25);
@@ -240,6 +242,7 @@ void config(){
 			if(rangeNum1 >= 0 && rangeNum2 >= rangeNum1 && rangeNum2 <= 9){
 				digitFloor = rangeNum1;
 				digitCeiling = rangeNum2;
+				menu();
 			}
 			else
 				cout << "Please input a number from 0 to 9 for each number";
