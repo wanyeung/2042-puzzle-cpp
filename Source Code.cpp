@@ -260,16 +260,16 @@ void config() {
 				menu();
 			}
 			else
-				cout << "Please input a number from 1 to 25";
+				cout << "Error: Please input a number from 1 to 25" << endl;
 		} while (pieceNum < 1 || pieceNum > 25);
-
 		break;
+
 	case 2:
 		do {
 			cout << "Input a new value for Range of random number (from 0-9):  " << endl
-				<< "from";
+				<< "from ";
 			cin >> rangeNum1;
-			cout << "to";
+			cout << "to ";
 			cin >> rangeNum2;
 
 			//Checking for Valid input
@@ -279,14 +279,13 @@ void config() {
 				menu();
 			}
 			else
-				cout << "Please input a number from 0 to 9 for each number";
-		} while (rangeNum1 < 0 || pieceNum > 9);
-
+				cout << "Error: Please input a number from 0 to 9 for each number" << endl;
+		} while (rangeNum1 < 0 || rangeNum2 > 9 || rangeNum2 <= rangeNum1);
 		break;
 
 	case 3: main(); break;
 
-	default: cout << "Please input a number from 1 to 5." << endl << endl;
+	default: cout << "Error: Please input a number from 1 to 5." << endl << endl;
 		config();
 	}
 }
