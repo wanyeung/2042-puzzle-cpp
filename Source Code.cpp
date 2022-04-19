@@ -523,12 +523,18 @@ void feature() {
 
 //Credit
 void credit() {
+	char option4;
 	cout << setw(20) << "Credits:" << endl
 		<< "21043941A HON Sin Hang Aaron 203A" << endl
 		<< "21000210A Yeung Miu Wan 203A" << endl
 		<< "21132728A Li Yin Cheung 203A" << endl
 		<< "21073380A Chu Kiu Tsun 203A" << endl
-		<< "21079810A Chu Sik Hin 203A" << endl;
+		<< "21079810A Chu Sik Hin 203A" << endl << endl
+		<< "press q to return to menu: ";
+		cin >> option4;
+		if (option4 == 'q' || option4 == 'Q')
+			cout << endl;
+		menu();
 	return;
 }
 
