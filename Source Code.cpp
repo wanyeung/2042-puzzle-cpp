@@ -2,6 +2,8 @@
 #include <iomanip>
 #include <cstdlib>
 #include <ctime>
+#include <cstring>
+#include <string>
 
 using namespace std;
 
@@ -44,22 +46,43 @@ void welcome() {
 	return;
 };
 
-void menu();
-void game();
-void GenerateNSEW(int &, int &, int &, int &);
-void config();
-void feature();
-void credit();
-void exits();
 
 int totalPiece = 15, digitFloor = 0, digitCeiling = 5;
-
+int countPlay = 0, countWin = 0, countLose = 0;
+bool mode = 0;
 
 class Piece {
 public:
 	//Constructor function
 	Piece() {}
- 
+
+	//Player Action
+	void rotate(char direction) { //direction = 'c' or 'a'
+		int temp = digitN;
+		switch (direction) {
+		case 'c':
+			digitN = digitW;
+			digitW = digitS;
+			digitS = digitE;
+			digitE = temp;
+			break;
+		case 'a':
+			digitN = digitE;
+			digitE = digitS;
+			digitS = digitW;
+			digitW = temp;
+			break;
+		case 'q': break;
+		default: cout << "Error: Please type c for clockwise, a for anticlockwise, q for cancel";
+		}
+	}
+
+	void print() {
+		cout << " " << digitN << " " << endl
+			<< digitW << letter << digitE << endl
+			<< " " << digitS << " " << endl;
+	}
+
 	//Set function
 	void setPiece(char l, int N, int S, int E, int W) {
 		letter = l;
@@ -70,6 +93,18 @@ public:
 
 	void setLetter(char l) {
 		letter = l;
+	}
+
+	void setLocation(char c, int r, bool p) {
+		column = c;
+		row = r;
+		placed = p;
+		if (mode == 1)
+			placed = 1;
+	}
+
+	void setPlaced(bool p) {
+		placed = p;
 	}
 
 	//Get function
@@ -88,6 +123,18 @@ public:
 		return letter;
 	}
 
+	char getColumn() {
+		return column;
+	}
+
+	int getRow() {
+		return row;
+	}
+
+	bool getPlaced() {
+		return placed;
+	}
+
 private:
 	char detail[2][2];
 
@@ -100,6 +147,15 @@ private:
 	int row;
 	bool placed;
 };
+
+void menu();
+void game();
+void gameBoard(Piece puzzle[]);
+void GenerateNSEW(int &, int &, int &, int &);
+void config();
+void feature();
+void credit();
+void exits();
 
 
 int main()
@@ -139,7 +195,7 @@ void menu() {
 
 //Start the game
 void game() {
-
+	countPlay += 1;
 	// Generate the solution array with puzzles pieces
 	Piece *solution = new Piece[totalPiece];
 
@@ -163,7 +219,7 @@ void game() {
 
 		solution[pieceID].setPiece(l, N, S, E, W);
 		/*
-		//For Debuging
+		//For Debugging
 		cout << l << " " << N << " " << S << " " << E << " " << W << " done " <<  pieceID << endl;
 		*/
 	}
@@ -182,7 +238,7 @@ void game() {
 			solution[pieceID].getDigit('W')
 		);
 		/*
-		//For Debuging
+		//For Debugging
 		cout << puzzle[pieceID].getLetter() << " ";
 		*/
 	}
@@ -209,15 +265,100 @@ void game() {
 	}
 
 	/*
-	//For Debuging
+	//For Debugging
 	 for(int pieceID=0;  pieceID < totalPiece; pieceID++)
 		cout << endl << puzzle[pieceID].getLetter() << " ";
+
+	for(int pieceID=0;  pieceID < totalPiece; pieceID++)
+		puzzle[pieceID].print();
 	*/
+
+
+	for (int pieceID = 0; pieceID < totalPiece; pieceID++) {
+		//Rotating the pieces in puzzle[] which is playable puzzle
+		int randNum = 1 + rand() % 4;
+		for (int i = 1; i != randNum; i++)
+			puzzle[pieceID].rotate('c');
+
+		//Set Location of pieces
+		char column;
+		int row;
+
+		switch (pieceID % 5) {
+		case 0: column = 'A'; break;
+		case 1: column = 'B'; break;
+		case 2: column = 'C'; break;
+		case 3: column = 'D'; break;
+		case 4: column = 'E'; break;
+		default: cout << "Error";
+		}
+
+		if (pieceID < 5) row = 1;
+		else if (pieceID >= 5 && pieceID <= 9) row = 2;
+		else if (pieceID >= 10 && pieceID <= 14) row = 3;
+		else if (pieceID >= 15 && pieceID <= 19) row = 4;
+		else row = 5;
+
+		puzzle[pieceID].setLocation(column, row, 0);
+
+		/* //For Debugging
+			cout << pieceID << " Column: " << puzzle[pieceID].getColumn() << " Row: " << puzzle[pieceID].getRow() << endl;
+		*/
+	}
 
 	return;
 }
 
-//
+//Print Game Board
+void gameBoard(Piece puzzle[]) {
+	cout << setw(17) << "A  B  C  D  E" << endl
+		<< "+---------------+" << endl;
+
+	char box[15][15];
+
+	//initialize all rows
+	for (int r = 1, row = 1, char column = 'A'; r <= 15; r++) {
+		//initialize all rows for digitN and S
+		for (int pieceID = 0; (r % 3 == 0 || r % 3 == 2) && pieceID < totalPiece && column != 'F'; pieceID++) {
+			strcpy_s(box[r], 15, " ");
+			if ((puzzle[pieceID].getPlaced() == 1)
+				&& (row == puzzle[pieceID].getRow() && (column == puzzle[pieceID].getColumn()))) {
+				column += 1;
+				char north = puzzle[pieceID].getDigit('N') + '0',
+					south = puzzle[pieceID].getDigit('S') + '0';
+				if (r % 3 == 0)
+					strcat_s(box[r], 15, north);
+				else
+					strcat_s(box[r], 15, south);
+			}
+			else strcat_s(box[r], 15, " ");
+			strcat_s(box[r], 15, " ");
+		}
+
+		//initialize rows for digitW and E
+		for (int pieceID = 0, count = 0, row = 1, char column = 'A'; r % 3 == 1 && pieceID < totalPiece && column != 'F'; pieceID++) {
+			if ((puzzle[pieceID].getPlaced() == 1)
+				&& (row == puzzle[pieceID].getRow() && (column == puzzle[pieceID].getColumn()))) {
+				column += 1;
+				char west = puzzle[pieceID].getDigit('W') + '0',
+					east = puzzle[pieceID].getDigit('E') + '0';
+				if (count == 0)
+					strcpy_s(box[r], 15, west);
+				else
+					strcat_s(box[r], 15, west);
+				strcat_s(box[r], 15, puzzle[pieceID].getLetter());
+				strcat_s(box[r], 15, east);
+				count = 1;
+			}
+			else strcpy_s(box[r], 15, "   ");
+			c += 3;
+		}
+	}
+
+	cout << "+---------------+" << endl;
+}
+
+//Generate and assign random number to digit NSEW
 void GenerateNSEW(int & N, int & S, int & E, int & W) {
 	for (int i = 0, randNum; i < 4; i++) {
 		if ((digitCeiling - digitFloor) == 0)
@@ -292,7 +433,33 @@ void config() {
 
 //Additional Feature
 void feature() {
+	int option;
+	cout << "*** Menu ***\n"
+		<< "[1] Statistic\n"
+		<< "[2] Gamemode\n"
+		<< "****************\n"
+		<< "\n"
+		<< "Option (1-2): ";
+	cin >> option;
 
+	switch (option) {
+	case 1:
+		cout << "Puzzles played: " << countPlay << endl
+			<< "Puzzles wined: " << countWin << endl
+			<< "Puzzles losed: " << countLose << endl;
+		break;
+	case 2:
+		char option;
+		cout << "Current Gamemode: Default" << endl
+			<< "Type y to change to 'Tidy' Mode, type anything else to cancel";
+		cin >> option;
+		if (option == 'y' || option == 'Y')
+			mode = 1;
+		break;
+	default: cout << endl << "Error: Please input a number from 1 to 2." << endl << endl; menu();
+	}
+
+	return;
 }
 
 //Credit
