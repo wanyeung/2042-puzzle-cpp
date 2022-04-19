@@ -307,7 +307,7 @@ void game() {
 			<< " Placed: " << puzzle[pieceID].getPlaced() << endl;
 		*/
 	}
-	
+		
 	gameBoard(puzzle);
 
 	return;
@@ -318,7 +318,8 @@ void gameBoard(Piece puzzle[]) {
 	cout << setw(17) << "A  B  C  D  E" << endl
 		<< " +---------------+" << endl;
 
-	for (int row = 1, r = 0; row <= 5; row++) {
+	for (int row = 1, r = 0; row <= 5 && r <= 15; r++) {
+	    
 		if (r % 3 == 0 || r % 3 == 2) {
 			cout << " |" ;
 			for (int column = 65; column <= 69; column++) {
@@ -337,18 +338,17 @@ void gameBoard(Piece puzzle[]) {
 				    
 					if ((puzzle[pieceID].getPlaced() == 0)
 						&& row == puzzle[pieceID].getRow() && column == ((int)puzzle[pieceID].getColumn())) {
-						if(r % 3 == 0) {cout << " " << puzzle[pieceID].getDigit('N') << " ";
-						}
+						if(r % 3 == 0) cout << " " << puzzle[pieceID].getDigit('N') << " ";
 						if (r % 3 == 2) cout << " " << puzzle[pieceID].getDigit('S') << " ";
 						noExistedPieces = 0;
 					}
 				}
 				if(noExistedPieces == 1) cout << "   ";
 			}
+			if(r % 3 == 2)
+	            row++; 
 		}
 		
-        r++;
-        cout << "|" << endl;
 
 		if (r % 3 == 1) {
 			cout << row << "|";
@@ -365,7 +365,6 @@ void gameBoard(Piece puzzle[]) {
 			}
 		}
 
-		r++;
         cout << "|" << endl;
 
 	}
