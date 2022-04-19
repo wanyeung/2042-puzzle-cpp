@@ -7,11 +7,13 @@
 
 using namespace std;
 
-int margin = 2;
+int margin = 30;
 
 //Welcome Message
 void welcome() {
 	int space = 8;
+	int margin = 2;
+	
 	cout << "Hints: Make sure your terminal width are 80 characters or above" << endl;
 
 	cout << setw(80) << setfill('-') << "" << endl << setfill(' ') << "";
@@ -49,7 +51,7 @@ void welcome() {
 
 int totalPiece = 15, digitFloor = 0, digitCeiling = 5;
 int countPlay = 0, countWin = 0, countLose = 0;
-bool mode = 0;
+bool mode = 0, rule = 0;
 
 class Piece {
 public:
@@ -301,13 +303,13 @@ void game() {
 
 		puzzle[pieceID].setLocation(column, row, 0);
 
-		 /*
-		 //For Debugging
-			cout << pieceID << " Column: " << puzzle[pieceID].getColumn() << " Row: " << puzzle[pieceID].getRow()
-			<< " Placed: " << puzzle[pieceID].getPlaced() << endl;
-		*/
+		/*
+		//For Debugging
+		   cout << pieceID << " Column: " << puzzle[pieceID].getColumn() << " Row: " << puzzle[pieceID].getRow()
+		   << " Placed: " << puzzle[pieceID].getPlaced() << endl;
+	   */
 	}
-		
+
 	gameBoard(puzzle);
 
 	return;
@@ -315,45 +317,61 @@ void game() {
 
 //Print Game Board
 void gameBoard(Piece puzzle[]) {
-	cout << setw(17) << "A  B  C  D  E" << endl
-		<< " +---------------+" << endl;
+    
+    if(mode == 0){
+        (rule == 0)? cout << left << setw(10) << "  Rule:"  << right << setw(margin-10) << "":
+            cout << setw(margin) << "";
+
+        cout << setw(17) << "A  B  C  D  E" ;
+        
+        if(mode == 0) cout << setw(26) << "+-----^^^------+";
+        
+        cout <<  endl;
+                
+        (rule == 0)? cout << left << setw(10) << "  Rule:"  << right << setw(margin-10) << "":
+            cout << setw(margin) << "";
+
+        cout << " +---------------+";
+        if(mode == 0) cout << setw(25) << "|Not-Yet-Placed|" << endl;
+    }
+
 
 	for (int row = 1, r = 0; row <= 5 && r <= 15; r++) {
-	    
+
 		if (r % 3 == 0 || r % 3 == 2) {
-			cout << " |" ;
+			cout << setw(margin) << "" << " |";
 			for (int column = 65; column <= 69; column++) {
-			    //Debugging
-			    //cout << endl << "Now is column" << (char) column << endl;
-			    
-			    bool noExistedPieces = 1;
+				//Debugging
+				//cout << endl << "Now is column" << (char) column << endl;
+
+				bool noExistedPieces = 1;
 				for (int pieceID = 0; pieceID < totalPiece; pieceID++) {
-				    /*
-				    //Debugging
-				    cout << endl << "Now is pieceID" << pieceID << " " << puzzle[pieceID].getRow() << " " <<
-				    (int)puzzle[pieceID].getColumn() << endl;
-				    
-				    //cout << "Row:" << row << " Column:" << column << endl; 
-				    */
-				    
+					/*
+					//Debugging
+					cout << endl << "Now is pieceID" << pieceID << " " << puzzle[pieceID].getRow() << " " <<
+					(int)puzzle[pieceID].getColumn() << endl;
+
+					//cout << "Row:" << row << " Column:" << column << endl;
+					*/
+
 					if ((puzzle[pieceID].getPlaced() == 0)
 						&& row == puzzle[pieceID].getRow() && column == ((int)puzzle[pieceID].getColumn())) {
-						if(r % 3 == 0) cout << " " << puzzle[pieceID].getDigit('N') << " ";
+						if (r % 3 == 0) cout << " " << puzzle[pieceID].getDigit('N') << " ";
 						if (r % 3 == 2) cout << " " << puzzle[pieceID].getDigit('S') << " ";
 						noExistedPieces = 0;
 					}
 				}
-				if(noExistedPieces == 1) cout << "   ";
+				if (noExistedPieces == 1) cout << "   ";
 			}
-			if(r % 3 == 2)
-	            row++; 
+			if (r % 3 == 2)
+				row++;
 		}
-		
+
 
 		if (r % 3 == 1) {
-			cout << row << "|";
+			cout << setw(margin) << "" << row << "|";
 			for (int column = 65; column <= 69; column++) {
-			    bool noExistedPieces = 1;
+				bool noExistedPieces = 1;
 				for (int pieceID = 0; pieceID < totalPiece; pieceID++) {
 					if ((puzzle[pieceID].getPlaced() == 0)
 						&& row == puzzle[pieceID].getRow() && column == ((int)puzzle[pieceID].getColumn())) {
@@ -361,15 +379,29 @@ void gameBoard(Piece puzzle[]) {
 						noExistedPieces = 0;
 					}
 				}
-				if(noExistedPieces == 1) cout << "   ";
+				if (noExistedPieces == 1) cout << "   ";
 			}
 		}
 
-        cout << "|" << endl;
+		cout << "|";
 
+        if(mode==0){
+            int placedRow = 0;
+           for (int pieceID = 0; pieceID < totalPiece && placedRow==0; pieceID++){
+               for (int l = 65; l <= 90 && l != 81; l++)
+               if((char)puzzle[pieceID].getLetter() == l){
+                if (r % 3 == 0) cout << setw(10) << "|" << setw(6) << " " << puzzle[pieceID].getDigit('N') << " "<< setw(7) << " |";
+                if (r % 3 == 1) cout << setw(10) << "|" << setw(6) << puzzle[pieceID].getDigit('W') << (char) l << puzzle[pieceID].getDigit('E')<< setw(7) << " |";
+				if (r % 3 == 2) cout << setw(10) << "|" << setw(6) << " " << puzzle[pieceID].getDigit('S') << " "<< setw(7) << " |";      
+				placedRow = 1;
+               }
+            }
+        }
+        
+		cout << endl;
 	}
 
-	cout << " +---------------+" << endl;
+	cout << setw(margin) << "" << " +---------------+" << setw(25) << "+-----vvv------+" << endl;
 }
 
 //Generate and assign random number to digit NSEW
@@ -451,9 +483,10 @@ void feature() {
 	cout << "*** Menu ***\n"
 		<< "[1] Statistic\n"
 		<< "[2] Gamemode\n"
+		<< "[3] Show Rules\n"
 		<< "****************\n"
 		<< "\n"
-		<< "Option (1-2): ";
+		<< "Option (1-3): ";
 	cin >> option;
 
 	switch (option) {
@@ -461,21 +494,24 @@ void feature() {
 		cout << "Puzzles played: " << countPlay << endl
 			<< "Puzzles wined: " << countWin << endl
 			<< "Puzzles losed: " << countLose << endl;
-			cout << "press r or R to return to menu: ";
-			char option;
-			cin >> option;
-			if (option == 'r' || option == 'R') 
+			<< "press q to return to menu: ";
+			char option2;
+			cin >> option2;
+			if (option2 == 'q' || option2 == 'Q') 
 			cout << endl;
-			menu();			
+			menu();
 		break;
 	case 2:
+		char option3;
 		cout << "Current Gamemode: Default" << endl
 			<< "Type y to change to 'Tidy' Mode, type anything else to cancel: ";
-		cin >> option;
-		if (option == 'y' || option == 'Y')
+		cin >> option3;
+		if (option3 == 'y' || option3 == 'Y')
 			mode = 1;
 			menu();
 		break;
+	case 3:
+	    break; 
 	default: cout << endl << "Error: Please input a number from 1 to 2." << endl << endl; menu();
 	}
 
