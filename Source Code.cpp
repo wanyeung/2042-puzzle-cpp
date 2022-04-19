@@ -341,7 +341,7 @@ void gameBoard(Piece puzzle[]) {
 	}
 
 
-	for (int row = 1, r = 0, l = 65; row <= 5 && r <= 15; r++) {
+	for (int row = 1, r = 0, page = 0, l = 65; row <= 5 && r <= 15; r++) {
 
 		if (r % 3 == 0 || r % 3 == 2) {
 			cout << setw(margin) << "" << " |";
@@ -393,12 +393,18 @@ void gameBoard(Piece puzzle[]) {
         //Not-Yet-Placed
 		if (mode == 0) {
 			int placedRow = 0;
+			l += page * 5;
+			
 			for (int pieceID = 0; pieceID < totalPiece && placedRow == 0; pieceID++) {
 					if ((char)puzzle[pieceID].getLetter() == l && l <= 90 && l != 81) {
 						if (r % 3 == 0) cout << setw(20) << "|" << setw(6) << " " << puzzle[pieceID].getDigit('N') << " " << setw(7) << " |";
 						if (r % 3 == 1) cout << setw(20) << "|" << setw(6) << puzzle[pieceID].getDigit('W') << (char)l << puzzle[pieceID].getDigit('E') << setw(7) << " |";
 						if (r % 3 == 2) {cout << setw(20) << "|" << setw(6) << " " << puzzle[pieceID].getDigit('S') << " " << setw(7) << " |"; l++;}
 						placedRow = 1;
+					}
+					else {
+					    cout << setw(20) << "|" << setw(7) << " " << setw(8) << " |";
+					    placedRow = 1;
 					}
 			}
 		}
