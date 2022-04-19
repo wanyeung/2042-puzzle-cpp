@@ -6,10 +6,14 @@
 #include <string>
 #include <chrono>
 #include <thread>
+#include <stdlib.h>
+#include <windows.h>
 
 using namespace std;
 
+
 int margin = 20;
+
 
 //Welcome Message
 void welcome() {
@@ -18,7 +22,7 @@ void welcome() {
 
 	cout << "Hints: Make sure your terminal width are 80 characters or above" << endl;
 	this_thread::sleep_for(chrono::milliseconds(1000));
-
+	
 	cout << setw(80) << setfill('-') << "" << endl << setfill(' ') << "";
 	cout << setw(margin) << "" << "xxxxxxxxxxx " << " xxxxxxxxxxxx   " << " xxxxxxxxxx " << " xxxxxxxxxxxx " << "xxxxxxxxxxx" << setw(space + 1) << "====" << endl
 		<< setw(margin) << "" << "xx       xx " << " x++++++++++x   " << " x++++++++x " << " x+++++++++x " << " x+++++++++x" << setw(space) << "||" << endl
@@ -158,7 +162,7 @@ private:
 void menu();
 void game();
 void gameBoard(Piece puzzle[]);
-void GenerateNSEW(int &, int &, int &, int &);
+void GenerateNSEW(int&, int&, int&, int&);
 void config();
 void feature();
 void credit();
@@ -167,7 +171,7 @@ void exits();
 
 int main()
 {
-
+	cout << "\033[0;37m" << endl; // white color : normal text color 
 	welcome();
 	menu();
 	return 0;
@@ -204,7 +208,7 @@ void menu() {
 void game() {
 	countPlay += 1;
 	// Generate the solution array with puzzles pieces
-	Piece *solution = new Piece[totalPiece];
+	Piece* solution = new Piece[totalPiece];
 
 	for (int pieceID = 0; pieceID < totalPiece; pieceID++) {
 		int l = pieceID + 65, N = 0, S = 0, E = 0, W = 0;
@@ -232,7 +236,7 @@ void game() {
 	}
 
 	//Transforming the pieces
-	Piece *puzzle = new Piece[totalPiece];
+	Piece* puzzle = new Piece[totalPiece];
 
 	//Initialized letter, digit
 	for (int pieceID = 0; pieceID < totalPiece; pieceID++) {
@@ -372,13 +376,18 @@ void gameBoard(Piece puzzle[]) {
 
 
 		if (r % 3 == 1) {
+			HANDLE console_color;
+			// Color of the console
+			console_color = GetStdHandle(STD_OUTPUT_HANDLE);
 			cout << setw(margin) << "" << row << "|";
 			for (int column = 65; column <= 69; column++) {
 				bool noExistedPieces = 1;
 				for (int pieceID = 0; pieceID < totalPiece; pieceID++) {
 					if ((puzzle[pieceID].getPlaced() == 0)
 						&& row == puzzle[pieceID].getRow() && column == ((int)puzzle[pieceID].getColumn())) {
-						cout << puzzle[pieceID].getDigit('W') << puzzle[pieceID].getLetter() << puzzle[pieceID].getDigit('E');
+						cout << puzzle[pieceID].getDigit('W');
+						SetConsoleTextAttribute(console_color, 8); // light grey 
+						cout << puzzle[pieceID].getLetter() << "\033[0;37m" << puzzle[pieceID].getDigit('E');
 						noExistedPieces = 0;
 					}
 				}
@@ -386,21 +395,37 @@ void gameBoard(Piece puzzle[]) {
 			}
 		}
 
+		cout << "\033[0;37m";
 		cout << "|";
 
 		//Not-Yet-Placed
 		if (mode == 0) {
+			HANDLE console_color;
+			// Color of the console
+			console_color = GetStdHandle(STD_OUTPUT_HANDLE);
 			int placedRow = 0;
 			for (int pieceID = 0; pieceID < totalPiece && placedRow == 0; pieceID++) {
 				if ((char)puzzle[pieceID].getLetter() == l && l <= 90 && l != 81) {
-					if (r % 3 == 0) cout << setw(20) << "|" << setw(6) << " " << puzzle[pieceID].getDigit('N') << " " << setw(7) << " |";
-					if (r % 3 == 1) cout << setw(20) << "|" << setw(6) << puzzle[pieceID].getDigit('W') << (char)l << puzzle[pieceID].getDigit('E') << setw(7) << " |";
-					if (r % 3 == 2) { cout << setw(20) << "|" << setw(6) << " " << puzzle[pieceID].getDigit('S') << " " << setw(7) << " |"; l++; }
+					if (r % 3 == 0) {
+						cout << setw(20) << "|" << setw(6) << " ";
+						SetConsoleTextAttribute(console_color, 4);
+						cout << puzzle[pieceID].getDigit('N') << "\033[0;37m" << " " << setw(7) << " |";
+					}
+					if (r % 3 == 1) {
+						cout << setw(20) << "|" << setw(6);
+						SetConsoleTextAttribute(console_color, 4);
+						cout << puzzle[pieceID].getDigit('W') << (char)l << puzzle[pieceID].getDigit('E') << "\033[0;37m" << setw(7) << " |";
+					}
+					if (r % 3 == 2) { 
+						cout << setw(20) << "|" << setw(6) << " ";
+						SetConsoleTextAttribute(console_color, 4);
+						cout << puzzle[pieceID].getDigit('S') << "\033[0;37m" << " " << setw(7) << " |"; l++;
+					}
 					placedRow = 1;
+					cout << "\033[0;37m";
 				}
 			}
 		}
-
 		cout << endl;
 	}
 
@@ -408,7 +433,7 @@ void gameBoard(Piece puzzle[]) {
 }
 
 //Generate and assign random number to digit NSEW
-void GenerateNSEW(int & N, int & S, int & E, int & W) {
+void GenerateNSEW(int& N, int& S, int& E, int& W) {
 	for (int i = 0, randNum; i < 4; i++) {
 		if ((digitCeiling - digitFloor) == 0)
 			randNum = digitFloor;
@@ -529,12 +554,12 @@ void credit() {
 		<< "21000210A Yeung Miu Wan 203A" << endl
 		<< "21132728A Li Yin Cheung 203A" << endl
 		<< "21073380A Chu Kiu Tsun 203A" << endl
-		<< "21079810A Chu Sik Hin 203A" << endl << endl
+		<< "21079810A Chu Sik Hin 203A" << endl
 		<< "press q to return to menu: ";
-		cin >> option4;
-		if (option4 == 'q' || option4 == 'Q')
-			cout << endl;
-		menu();
+	    cin >> option4;
+	    if (option4 == 'q' || option4 == 'Q')
+		        cout << endl;
+	    menu();
 	return;
 }
 
