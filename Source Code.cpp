@@ -461,14 +461,20 @@ void feature() {
 		cout << "Puzzles played: " << countPlay << endl
 			<< "Puzzles wined: " << countWin << endl
 			<< "Puzzles losed: " << countLose << endl;
+			cout << "press r or R to return to menu: ";
+			char option;
+			cin >> option;
+			if (option == 'r' || option == 'R') 
+			cout << endl;
+			menu();			
 		break;
 	case 2:
-		char option;
 		cout << "Current Gamemode: Default" << endl
-			<< "Type y to change to 'Tidy' Mode, type anything else to cancel";
+			<< "Type y to change to 'Tidy' Mode, type anything else to cancel: ";
 		cin >> option;
 		if (option == 'y' || option == 'Y')
 			mode = 1;
+			menu();
 		break;
 	default: cout << endl << "Error: Please input a number from 1 to 2." << endl << endl; menu();
 	}
