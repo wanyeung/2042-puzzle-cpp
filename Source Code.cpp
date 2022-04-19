@@ -4,6 +4,8 @@
 #include <ctime>
 #include <cstring>
 #include <string>
+#include <chrono>
+#include <thread>
 
 using namespace std;
 
@@ -13,8 +15,9 @@ int margin = 30;
 void welcome() {
 	int space = 8;
 	int margin = 2;
-	
+
 	cout << "Hints: Make sure your terminal width are 80 characters or above" << endl;
+	this_thread::sleep_for(chrono::milliseconds(1000));
 
 	cout << setw(80) << setfill('-') << "" << endl << setfill(' ') << "";
 	cout << setw(margin) << "" << "xxxxxxxxxxx " << " xxxxxxxxxxxx   " << " xxxxxxxxxx " << " xxxxxxxxxxxx " << "xxxxxxxxxxx" << setw(space + 1) << "====" << endl
@@ -29,6 +32,7 @@ void welcome() {
 		<< setw(margin) << "" << "xx       xx " << " x++x  x++++++x " << " x++++++++x " << " x+++++++++x " << " x+++++++++x" << setw(space) << "||" << endl
 		<< setw(margin) << "" << "xxxxxxxxxxx " << " xxxx  xxxxxxxx " << " xxxxxxxxxx " << " xxxxxxxxxxx " << " xxxxxxxxxxx" << setw(space + 1) << "====" << endl;
 	cout << endl << endl;
+	this_thread::sleep_for(chrono::milliseconds(1000));
 
 	cout << setw(margin) << "" << "xxxxxxxxxxx " << " xxxx  xxxx " << " xxxxxxxxxxxx " << " xxxxxxxxxxxx " << " xxxx         " << " xxxxxxxxxx " << endl
 		<< setw(margin) << "" << "xx       xx " << " x++x  x++x " << " x++++++++++x " << " x++++++++++x " << " x++x         " << " x++++++++x " << endl
@@ -45,6 +49,7 @@ void welcome() {
 	cout << endl << endl;
 	cout << setw(80) << setfill('-') << "" << endl << setfill(' ') << "";
 
+	this_thread::sleep_for(chrono::milliseconds(1000));
 	return;
 };
 
@@ -317,23 +322,23 @@ void game() {
 
 //Print Game Board
 void gameBoard(Piece puzzle[]) {
-    
-    if(mode == 0){
-        (rule == 0)? cout << left << setw(10) << "  Rule:"  << right << setw(margin-10) << "":
-            cout << setw(margin) << "";
 
-        cout << setw(17) << "A  B  C  D  E" ;
-        
-        if(mode == 0) cout << setw(26) << "+-----^^^------+";
-        
-        cout <<  endl;
-                
-        (rule == 0)? cout << left << setw(10) << "  Rule:"  << right << setw(margin-10) << "":
-            cout << setw(margin) << "";
+	if (mode == 0) {
+		(rule == 0) ? cout << left << setw(10) << "  Rule:" << right << setw(margin - 10) << "" :
+			cout << setw(margin) << "";
 
-        cout << " +---------------+";
-        if(mode == 0) cout << setw(25) << "|Not-Yet-Placed|" << endl;
-    }
+		cout << setw(17) << "A  B  C  D  E";
+
+		if (mode == 0) cout << setw(26) << "+-----^^^------+";
+
+		cout << endl;
+
+		(rule == 0) ? cout << left << setw(10) << "  Rule:" << right << setw(margin - 10) << "" :
+			cout << setw(margin) << "";
+
+		cout << " +---------------+";
+		if (mode == 0) cout << setw(25) << "|Not-Yet-Placed|" << endl;
+	}
 
 
 	for (int row = 1, r = 0; row <= 5 && r <= 15; r++) {
@@ -385,19 +390,19 @@ void gameBoard(Piece puzzle[]) {
 
 		cout << "|";
 
-        if(mode==0){
-            int placedRow = 0;
-           for (int pieceID = 0; pieceID < totalPiece && placedRow==0; pieceID++){
-               for (int l = 65; l <= 90 && l != 81; l++)
-               if((char)puzzle[pieceID].getLetter() == l){
-                if (r % 3 == 0) cout << setw(10) << "|" << setw(6) << " " << puzzle[pieceID].getDigit('N') << " "<< setw(7) << " |";
-                if (r % 3 == 1) cout << setw(10) << "|" << setw(6) << puzzle[pieceID].getDigit('W') << (char) l << puzzle[pieceID].getDigit('E')<< setw(7) << " |";
-				if (r % 3 == 2) cout << setw(10) << "|" << setw(6) << " " << puzzle[pieceID].getDigit('S') << " "<< setw(7) << " |";      
-				placedRow = 1;
-               }
-            }
-        }
-        
+		if (mode == 0) {
+			int placedRow = 0;
+			for (int pieceID = 0; pieceID < totalPiece && placedRow == 0; pieceID++) {
+				for (int l = 65; l <= 90 && l != 81; l++)
+					if ((char)puzzle[pieceID].getLetter() == l) {
+						if (r % 3 == 0) cout << setw(10) << "|" << setw(6) << " " << puzzle[pieceID].getDigit('N') << " " << setw(7) << " |";
+						if (r % 3 == 1) cout << setw(10) << "|" << setw(6) << puzzle[pieceID].getDigit('W') << (char)l << puzzle[pieceID].getDigit('E') << setw(7) << " |";
+						if (r % 3 == 2) cout << setw(10) << "|" << setw(6) << " " << puzzle[pieceID].getDigit('S') << " " << setw(7) << " |";
+						placedRow = 1;
+					}
+			}
+		}
+
 		cout << endl;
 	}
 
@@ -493,13 +498,13 @@ void feature() {
 	case 1:
 		cout << "Puzzles played: " << countPlay << endl
 			<< "Puzzles wined: " << countWin << endl
-			<< "Puzzles losed: " << countLose << endl;
+			<< "Puzzles losed: " << countLose << endl
 			<< "press q to return to menu: ";
-			char option2;
-			cin >> option2;
-			if (option2 == 'q' || option2 == 'Q') 
+		char option2;
+		cin >> option2;
+		if (option2 == 'q' || option2 == 'Q')
 			cout << endl;
-			menu();
+		menu();
 		break;
 	case 2:
 		char option3;
@@ -508,10 +513,10 @@ void feature() {
 		cin >> option3;
 		if (option3 == 'y' || option3 == 'Y')
 			mode = 1;
-			menu();
+		menu();
 		break;
 	case 3:
-	    break; 
+		break;
 	default: cout << endl << "Error: Please input a number from 1 to 2." << endl << endl; menu();
 	}
 
