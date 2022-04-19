@@ -301,10 +301,14 @@ void game() {
 
 		puzzle[pieceID].setLocation(column, row, 0);
 
-		/* //For Debugging
-			cout << pieceID << " Column: " << puzzle[pieceID].getColumn() << " Row: " << puzzle[pieceID].getRow() << endl;
+		 /*
+		 //For Debugging
+			cout << pieceID << " Column: " << puzzle[pieceID].getColumn() << " Row: " << puzzle[pieceID].getRow()
+			<< " Placed: " << puzzle[pieceID].getPlaced() << endl;
 		*/
 	}
+	
+	gameBoard(puzzle);
 
 	return;
 }
@@ -312,50 +316,61 @@ void game() {
 //Print Game Board
 void gameBoard(Piece puzzle[]) {
 	cout << setw(17) << "A  B  C  D  E" << endl
-		<< "+---------------+" << endl;
+		<< " +---------------+" << endl;
 
-	char box[15][15];
-
-	//initialize all rows
-	for (int r = 1, row = 1, char column = 'A'; r <= 15; r++) {
-		//initialize all rows for digitN and S
-		for (int pieceID = 0; (r % 3 == 0 || r % 3 == 2) && pieceID < totalPiece && column != 'F'; pieceID++) {
-			strcpy_s(box[r], 15, " ");
-			if ((puzzle[pieceID].getPlaced() == 1)
-				&& (row == puzzle[pieceID].getRow() && (column == puzzle[pieceID].getColumn()))) {
-				column += 1;
-				char north = puzzle[pieceID].getDigit('N') + '0',
-					south = puzzle[pieceID].getDigit('S') + '0';
-				if (r % 3 == 0)
-					strcat_s(box[r], 15, north);
-				else
-					strcat_s(box[r], 15, south);
+	for (int row = 1, r = 0; row <= 5; row++) {
+		if (r % 3 == 0 || r % 3 == 2) {
+			cout << " |" ;
+			for (int column = 65; column <= 69; column++) {
+			    //Debugging
+			    //cout << endl << "Now is column" << (char) column << endl;
+			    
+			    bool noExistedPieces = 1;
+				for (int pieceID = 0; pieceID < totalPiece; pieceID++) {
+				    /*
+				    //Debugging
+				    cout << endl << "Now is pieceID" << pieceID << " " << puzzle[pieceID].getRow() << " " <<
+				    (int)puzzle[pieceID].getColumn() << endl;
+				    
+				    //cout << "Row:" << row << " Column:" << column << endl; 
+				    */
+				    
+					if ((puzzle[pieceID].getPlaced() == 0)
+						&& row == puzzle[pieceID].getRow() && column == ((int)puzzle[pieceID].getColumn())) {
+						if(r % 3 == 0) {cout << " " << puzzle[pieceID].getDigit('N') << " ";
+						}
+						if (r % 3 == 2) cout << " " << puzzle[pieceID].getDigit('S') << " ";
+						noExistedPieces = 0;
+					}
+				}
+				if(noExistedPieces == 1) cout << "   ";
 			}
-			else strcat_s(box[r], 15, " ");
-			strcat_s(box[r], 15, " ");
+		}
+		
+        r++;
+        cout << "|" << endl;
+
+		if (r % 3 == 1) {
+			cout << row << "|";
+			for (int column = 65; column <= 69; column++) {
+			    bool noExistedPieces = 1;
+				for (int pieceID = 0; pieceID < totalPiece; pieceID++) {
+					if ((puzzle[pieceID].getPlaced() == 0)
+						&& row == puzzle[pieceID].getRow() && column == ((int)puzzle[pieceID].getColumn())) {
+						cout << puzzle[pieceID].getDigit('W') << puzzle[pieceID].getLetter() << puzzle[pieceID].getDigit('E');
+						noExistedPieces = 0;
+					}
+				}
+				if(noExistedPieces == 1) cout << "   ";
+			}
 		}
 
-		//initialize rows for digitW and E
-		for (int pieceID = 0, count = 0, row = 1, char column = 'A'; r % 3 == 1 && pieceID < totalPiece && column != 'F'; pieceID++) {
-			if ((puzzle[pieceID].getPlaced() == 1)
-				&& (row == puzzle[pieceID].getRow() && (column == puzzle[pieceID].getColumn()))) {
-				column += 1;
-				char west = puzzle[pieceID].getDigit('W') + '0',
-					east = puzzle[pieceID].getDigit('E') + '0';
-				if (count == 0)
-					strcpy_s(box[r], 15, west);
-				else
-					strcat_s(box[r], 15, west);
-				strcat_s(box[r], 15, puzzle[pieceID].getLetter());
-				strcat_s(box[r], 15, east);
-				count = 1;
-			}
-			else strcpy_s(box[r], 15, "   ");
-			c += 3;
-		}
+		r++;
+        cout << "|" << endl;
+
 	}
 
-	cout << "+---------------+" << endl;
+	cout << " +---------------+" << endl;
 }
 
 //Generate and assign random number to digit NSEW
