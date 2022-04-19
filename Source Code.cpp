@@ -9,7 +9,7 @@
 
 using namespace std;
 
-int margin = 30;
+int margin = 20;
 
 //Welcome Message
 void welcome() {
@@ -329,7 +329,7 @@ void gameBoard(Piece puzzle[]) {
 
 		cout << setw(17) << "A  B  C  D  E";
 
-		if (mode == 0) cout << setw(26) << "+-----^^^------+";
+		if (mode == 0) cout << setw(36) << "+-----^^^------+";
 
 		cout << endl;
 
@@ -337,11 +337,11 @@ void gameBoard(Piece puzzle[]) {
 			cout << setw(margin) << "";
 
 		cout << " +---------------+";
-		if (mode == 0) cout << setw(25) << "|Not-Yet-Placed|" << endl;
+		if (mode == 0) cout << setw(35) << "|Not-Yet-Placed|" << endl;
 	}
 
 
-	for (int row = 1, r = 0; row <= 5 && r <= 15; r++) {
+	for (int row = 1, r = 0, l = 65; row <= 5 && r <= 15; r++) {
 
 		if (r % 3 == 0 || r % 3 == 2) {
 			cout << setw(margin) << "" << " |";
@@ -390,14 +390,14 @@ void gameBoard(Piece puzzle[]) {
 
 		cout << "|";
 
+        //Not-Yet-Placed
 		if (mode == 0) {
 			int placedRow = 0;
 			for (int pieceID = 0; pieceID < totalPiece && placedRow == 0; pieceID++) {
-				for (int l = 65; l <= 90 && l != 81; l++)
-					if ((char)puzzle[pieceID].getLetter() == l) {
-						if (r % 3 == 0) cout << setw(10) << "|" << setw(6) << " " << puzzle[pieceID].getDigit('N') << " " << setw(7) << " |";
-						if (r % 3 == 1) cout << setw(10) << "|" << setw(6) << puzzle[pieceID].getDigit('W') << (char)l << puzzle[pieceID].getDigit('E') << setw(7) << " |";
-						if (r % 3 == 2) cout << setw(10) << "|" << setw(6) << " " << puzzle[pieceID].getDigit('S') << " " << setw(7) << " |";
+					if ((char)puzzle[pieceID].getLetter() == l && l <= 90 && l != 81) {
+						if (r % 3 == 0) cout << setw(20) << "|" << setw(6) << " " << puzzle[pieceID].getDigit('N') << " " << setw(7) << " |";
+						if (r % 3 == 1) cout << setw(20) << "|" << setw(6) << puzzle[pieceID].getDigit('W') << (char)l << puzzle[pieceID].getDigit('E') << setw(7) << " |";
+						if (r % 3 == 2) {cout << setw(20) << "|" << setw(6) << " " << puzzle[pieceID].getDigit('S') << " " << setw(7) << " |"; l++;}
 						placedRow = 1;
 					}
 			}
@@ -406,7 +406,7 @@ void gameBoard(Piece puzzle[]) {
 		cout << endl;
 	}
 
-	cout << setw(margin) << "" << " +---------------+" << setw(25) << "+-----vvv------+" << endl;
+	cout << setw(margin) << "" << " +---------------+" << setw(35) << "+-----vvv------+" << endl;
 }
 
 //Generate and assign random number to digit NSEW
