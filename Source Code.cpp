@@ -332,7 +332,7 @@ void gameBoard(Piece puzzle[]) {
 
 		cout << setw(16) << "A  B  C  D  E";
 
-		cout << setw(36) << "+-----^^^------+";
+		cout << setw(37) << "+-----^^^------+";
 
 		cout << endl;
 
