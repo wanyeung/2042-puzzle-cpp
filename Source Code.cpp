@@ -330,7 +330,7 @@ void gameBoard(Piece puzzle[]) {
 		(rule == 0) ? cout << left << setw(10) << "  Rule:" << right << setw(margin - 10) << "" :
 			cout << setw(margin) << "";
 
-		cout << setw(17) << "A  B  C  D  E";
+		cout << setw(16) << "A  B  C  D  E";
 
 		cout << setw(36) << "+-----^^^------+";
 
