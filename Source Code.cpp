@@ -22,7 +22,7 @@ void welcome() {
 
 	cout << "Hints: Make sure your terminal width are 80 characters or above" << endl;
 	this_thread::sleep_for(chrono::milliseconds(1000));
-	
+
 	cout << setw(80) << setfill('-') << "" << endl << setfill(' ') << "";
 	cout << setw(margin) << "" << "xxxxxxxxxxx " << " xxxxxxxxxxxx   " << " xxxxxxxxxx " << " xxxxxxxxxxxx " << "xxxxxxxxxxx" << setw(space + 1) << "====" << endl
 		<< setw(margin) << "" << "xx       xx " << " x++++++++++x   " << " x++++++++x " << " x+++++++++x " << " x+++++++++x" << setw(space) << "||" << endl
@@ -326,13 +326,13 @@ void game() {
 //Print Game Board
 void gameBoard(Piece puzzle[]) {
 
-	if (mode == 0) {
+	
 		(rule == 0) ? cout << left << setw(10) << "  Rule:" << right << setw(margin - 10) << "" :
 			cout << setw(margin) << "";
 
 		cout << setw(17) << "A  B  C  D  E";
 
-		if (mode == 0) cout << setw(36) << "+-----^^^------+";
+		cout << setw(36) << "+-----^^^------+";
 
 		cout << endl;
 
@@ -340,9 +340,8 @@ void gameBoard(Piece puzzle[]) {
 			cout << setw(margin) << "";
 
 		cout << " +---------------+";
-		if (mode == 0) cout << setw(35) << "|Not-Yet-Placed|" << endl;
-	}
-
+		cout << setw(35) << "|Not-Yet-Placed|" << endl;
+	
 
 	for (int row = 1, r = 0, l = 65; row <= 5 && r <= 15; r++) {
 
@@ -416,7 +415,7 @@ void gameBoard(Piece puzzle[]) {
 						SetConsoleTextAttribute(console_color, 4);
 						cout << puzzle[pieceID].getDigit('W') << (char)l << puzzle[pieceID].getDigit('E') << "\033[0;37m" << setw(7) << " |";
 					}
-					if (r % 3 == 2) { 
+					if (r % 3 == 2) {
 						cout << setw(20) << "|" << setw(6) << " ";
 						SetConsoleTextAttribute(console_color, 4);
 						cout << puzzle[pieceID].getDigit('S') << "\033[0;37m" << " " << setw(7) << " |"; l++;
@@ -430,6 +429,7 @@ void gameBoard(Piece puzzle[]) {
 	}
 
 	cout << setw(margin) << "" << " +---------------+" << setw(35) << "+-----vvv------+" << endl;
+
 }
 
 //Generate and assign random number to digit NSEW
@@ -534,7 +534,7 @@ void feature() {
 		cout << "Current Gamemode: Default" << endl
 			<< "Type y to change to 'Tidy' Mode, type anything else to cancel: ";
 		cin >> option3;
-		if (option3 == 'y' || option3 == 'Y')
+		if (option3 == 'y' || option3 == 'Y') 
 			mode = 1;
 		menu();
 		break;
@@ -556,24 +556,33 @@ void credit() {
 		<< "21073380A Chu Kiu Tsun 203A" << endl
 		<< "21079810A Chu Sik Hin 203A" << endl
 		<< "press q to return to menu: ";
-	    cin >> option4;
-	    if (option4 == 'q' || option4 == 'Q')
-		        cout << endl;
-	    menu();
+	cin >> option4;
+	if (option4 == 'q' || option4 == 'Q')
+		cout << endl;
+	menu();
 	return;
 }
 
 //Exit
 void exits() {
 	char ch;
-	cout << "Stop the game?" << endl;
-	cout << "Press 'y' to confirm, 'n' to cancel." << endl;
+	cout << "Press Q to stop the game" << endl;
 	cin >> ch;
-	if (ch == 'y' || ch == 'Y')
-		exit(0);
-	if (ch == 'n' || ch == 'N') {
-		cout << "game continued!" << endl;
-		menu();
+	if (ch == 'Q') {
+		cout << "Stop the game?" << endl;
+		cout << "Press 'y' or 'Y' to confirm, 'n' or 'N' to cancel." << endl;
+		cin >> ch;
+		if (ch == 'y' || ch == 'Y')
+			cout << "Game end ! See you again!" << endl;
+		return;
+		if (ch == 'n' || ch == 'N') {
+			cout << "game continued!" << endl;
+			menu();
+		}
+	}
+	else {
+		cout << "Please press Q to stop the game" << endl;
+		exits();
 	}
 	return;
 }
