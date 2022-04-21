@@ -8,22 +8,49 @@
 #include <thread>
 #include <stdlib.h>
 #include <windows.h>
+#include <conio.h>
 
 using namespace std;
 
-
+//Global variable
 int margin = 20;
+int totalPiece = 15, digitFloor = 0, digitCeiling = 5;
+int countPlay = 0, countWin = 0, countLose = 0;
+bool mode = 0, rule = 0;
 
+//Repetitive line for reuse
+void anyKey() {
+	cout << "Press any key to continue...";
+	_getch();
+	cout << endl;
+};
+
+void divder() {
+	cout << setw(80) << setfill('-') << "" << endl << setfill(' ') << "";
+};
+
+void newPage() {
+	divder();
+	for (int i = 0; i < 25; i++)
+		cout << endl;
+};
+
+void errorMsg(string msg) {
+	cout << endl << setw(20) << "" << "Error: " << msg << endl;
+	divder();
+};
 
 //Welcome Message
 void welcome() {
 	int space = 8;
 	int margin = 2;
 
-	cout << "Hints: Make sure your terminal width are 80 characters or above" << endl;
-	this_thread::sleep_for(chrono::milliseconds(1000));
+	// Instruction for gaming environment, 80 is the default terminal size
+	cout << "Hints: Make sure your terminal width are 80 characters or above" << endl 
+		<< "Loading..." << endl << endl;
+	this_thread::sleep_for(chrono::milliseconds(1000)); //waiting for 1second
 
-	cout << setw(80) << setfill('-') << "" << endl << setfill(' ') << "";
+	divder();
 	cout << setw(margin) << "" << "xxxxxxxxxxx " << " xxxxxxxxxxxx   " << " xxxxxxxxxx " << " xxxxxxxxxxxx " << "xxxxxxxxxxx" << setw(space + 1) << "====" << endl
 		<< setw(margin) << "" << "xx       xx " << " x++++++++++x   " << " x++++++++x " << " x+++++++++x " << " x+++++++++x" << setw(space) << "||" << endl
 		<< setw(margin) << "" << "xx  xxxxxxx " << " x++xxxxxx++x   " << " x++xxxx++x " << " x++xxxxxxxx " << " x++xxxxxxxx" << setw(space) << "||" << endl
@@ -51,17 +78,14 @@ void welcome() {
 		<< setw(margin) << "" << "xxxxxx      " << " xxxxxxxxxx " << " xxxxxxxxxxxx " << " xxxxxxxxxxxx " << " xxxxxxxxxxxx " << " xxxxxxxxxx " << endl;
 
 	cout << endl << endl;
-	cout << setw(80) << setfill('-') << "" << endl << setfill(' ') << "";
 
-	this_thread::sleep_for(chrono::milliseconds(1000));
+	divder();
+	anyKey();
+
 	return;
 };
 
-
-int totalPiece = 15, digitFloor = 0, digitCeiling = 5;
-int countPlay = 0, countWin = 0, countLose = 0;
-bool mode = 0, rule = 0;
-
+//All member fucntions and data member of Puzzle Pieces 
 class Piece {
 public:
 	//Constructor function
@@ -72,19 +96,11 @@ public:
 		int temp = digitN;
 		switch (direction) {
 		case 'c':
-			digitN = digitW;
-			digitW = digitS;
-			digitS = digitE;
-			digitE = temp;
-			break;
+			digitN = digitW; digitW = digitS; digitS = digitE; digitE = temp; break;
 		case 'a':
-			digitN = digitE;
-			digitE = digitS;
-			digitS = digitW;
-			digitW = temp;
-			break;
+			digitN = digitE; digitE = digitS; digitS = digitW; digitW = temp; break;
 		case 'q': break;
-		default: cout << "Error: Please type c for clockwise, a for anticlockwise, q for cancel";
+		default: divder();  errorMsg("Please enter c for clockwise, a for anticlockwise, q for cancel");
 		}
 	}
 
@@ -125,7 +141,7 @@ public:
 		case 'S': return digitS; break;
 		case 'E': return digitE; break;
 		case 'W': return digitW; break;
-		default: cout << "Error";
+		default: errorMsg("");
 		}
 		return EXIT_SUCCESS;
 	}
@@ -180,25 +196,33 @@ int main()
 
 //Main Menu
 void menu() {
-	int option;
-	cout << "*** Main Menu ***\n"
-		<< "[1] Start Game\n"
-		<< "[2] Settings\n"
-		<< "[3] Useful feature(s) added\n"
-		<< "[4] Credits\n"
-		<< "[5] Exit\n"
-		<< "****************\n"
-		<< "\n"
-		<< "Option (1-5): ";
+	newPage();
+
+	int option = 0, margin = 2;
+
+	cout << setw(margin) << "" << "*** Main Menu ***\n"
+		<< setw(margin) << "" << "[1] Start Game\n"
+		<< setw(margin) << "" << "[2] Settings\n"
+		<< setw(margin) << "" << "[3] Useful feature(s) added\n"
+		<< setw(margin) << "" << "[4] Credits\n"
+		<< setw(margin) << "" << "[5] Exit\n"
+		<< setw(margin) << "" << "****************\n"
+		<< setw(margin) << "" << "\n"
+		<< setw(margin) << "" << "Option (1-5): ";
 	cin >> option;
+	divder();
 
 	switch (option) {
-	case 1: cout << endl << endl; game();  break;
-	case 2: cout << endl << endl; config(); break;
-	case 3: cout << endl << endl; feature(); break;
-	case 4: cout << endl << endl; credit();  break;
-	case 5: cout << endl << endl; exits();  break;
-	default: cout << endl << "Please input a number from 1 to 5." << endl << endl; menu();
+	case 1: game();  break;
+	case 2: config(); break;
+	case 3: feature(); break;
+	case 4: credit();  break;
+	case 5: exits();  break;
+	default: 
+		errorMsg("Please enter a number from 1 to 5.");
+		divder(); 
+		anyKey();
+		menu();
 	}
 
 	return;
@@ -206,23 +230,27 @@ void menu() {
 
 //Start the game
 void game() {
-	countPlay += 1;
-	// Generate the solution array with puzzles pieces
+	newPage(); countPlay += 1;
+	cout << "Game started! Now generating your puzzle...";
+	this_thread::sleep_for(chrono::milliseconds(1000)); 
+
+	// Algorithm: solution[] letter -> digitNSEW -> puzzle[] digitNSEW -> 
+
+	// Generate the solution
 	Piece* solution = new Piece[totalPiece];
 
 	for (int pieceID = 0; pieceID < totalPiece; pieceID++) {
-		int l = pieceID + 65, N = 0, S = 0, E = 0, W = 0;
+		int l = pieceID + 65, N = 0, S = 0, E = 0, W = 0; //Generate the letter from A-Z
 
-		//Generate the digitNSEW for piece1
-		if (pieceID == 0)
-			GenerateNSEW(N, S, E, W);
-		//Generate all left pieces except piece1 
-		else if (pieceID % 5 != 0) {
+		//Generate the random digitNSEW for piece1
+		if (pieceID == 0) GenerateNSEW(N, S, E, W);
+		else if (pieceID % 5 != 0) 
+		{ //Generate all left pieces except piece1 
 			GenerateNSEW(N, S, E, W);
 			W = solution[pieceID - 1].getDigit('E');
 		}
-		else {
-			//Generate all other pieces
+		else 
+		{ //Generate all other pieces
 			GenerateNSEW(N, S, E, W);
 			N = solution[pieceID - 5].getDigit('S');
 			E = solution[pieceID - 1].getDigit('W');
@@ -235,12 +263,10 @@ void game() {
 		*/
 	}
 
-	//Transforming the pieces
+	//Putting the digit of solution in puzzle[]
 	Piece* puzzle = new Piece[totalPiece];
 
-	//Initialized letter, digit
 	for (int pieceID = 0; pieceID < totalPiece; pieceID++) {
-
 		puzzle[pieceID].setPiece(
 			65 + rand() % totalPiece,
 			solution[pieceID].getDigit('N'),
@@ -248,16 +274,12 @@ void game() {
 			solution[pieceID].getDigit('E'),
 			solution[pieceID].getDigit('W')
 		);
-		/*
-		//For Debugging
+		/*//For Debugging
 		cout << puzzle[pieceID].getLetter() << " ";
 		*/
 	}
 
-	cout << endl;
-
 	//Transforming the letter
-
 	for (int pieceID = 1; pieceID < totalPiece;) {
 		bool change = 0;
 
@@ -269,6 +291,7 @@ void game() {
 
 		if (change == 0)
 			pieceID++;
+
 		else {
 			puzzle[pieceID].setLetter(65 + rand() % totalPiece);
 			solution[pieceID].setLetter(puzzle[pieceID].getLetter());   //Save puzzle[] to solution[]
@@ -300,7 +323,7 @@ void game() {
 		case 2: column = 'C'; break;
 		case 3: column = 'D'; break;
 		case 4: column = 'E'; break;
-		default: cout << "Error";
+		default: errorMsg("");
 		}
 
 		if (pieceID < 5) row = 1;
@@ -326,26 +349,26 @@ void game() {
 //Print Game Board
 void gameBoard(Piece puzzle[]) {
 
-	
-		(rule == 0) ? cout << left << setw(10) << "  Rule:" << right << setw(margin - 10) << "" :
-			cout << setw(margin) << "";
 
-		cout << setw(16) << "A  B  C  D  E";
-		if (mode == 0) 
+	(rule == 0) ? cout << left << setw(10) << "  Rule:" << right << setw(margin - 10) << "" :
+		cout << setw(margin) << "";
+
+	cout << setw(16) << "A  B  C  D  E";
+	if (mode == 0)
 		cout << setw(37) << "+-----^^^------+";
-		
-		cout << endl;
 
-		(rule == 0) ? cout << left << setw(10) << "  Rule:" << right << setw(margin - 10) << "" :
-			cout << setw(margin) << "";
+	cout << endl;
 
-		cout << " +---------------+";
-		if (mode == 0) {
-			cout << setw(35) << "|Not-Yet-Placed|";
-		}
-		cout << endl;
-			
-		
+	(rule == 0) ? cout << left << setw(10) << "  Rule:" << right << setw(margin - 10) << "" :
+		cout << setw(margin) << "";
+
+	cout << " +---------------+";
+	if (mode == 0) {
+		cout << setw(35) << "|Not-Yet-Placed|";
+	}
+	cout << endl;
+
+
 
 	for (int row = 1, r = 0, l = 65; row <= 5 && r <= 15; r++) {
 
@@ -382,6 +405,7 @@ void gameBoard(Piece puzzle[]) {
 			HANDLE console_color;
 			// Color of the console
 			console_color = GetStdHandle(STD_OUTPUT_HANDLE);
+
 			cout << setw(margin) << "" << row << "|";
 			for (int column = 65; column <= 69; column++) {
 				bool noExistedPieces = 1;
@@ -433,8 +457,8 @@ void gameBoard(Piece puzzle[]) {
 	}
 
 	cout << setw(margin) << "" << " +---------------+" << setw(35);
-	if(mode == 0)
-	cout << "+-----vvv------+" << endl;
+	if (mode == 0)
+		cout << "+-----vvv------+" << endl;
 
 }
 
@@ -452,7 +476,7 @@ void GenerateNSEW(int& N, int& S, int& E, int& W) {
 		case 1: S = randNum; break;
 		case 2: E = randNum; break;
 		case 3: W = randNum; break;
-		default: cout << "Error";
+		default: errorMsg("");
 		}
 	}
 	return;
@@ -481,7 +505,7 @@ void config() {
 				menu();
 			}
 			else
-				cout << "Error: Please input a number from 1 to 25" << endl;
+				errorMsg("Please input a number from 1 to 25");
 		} while (pieceNum < 1 || pieceNum > 25);
 		break;
 
@@ -500,13 +524,14 @@ void config() {
 				menu();
 			}
 			else
-				cout << "Error: Please input a number from 0 to 9 for each number" << endl;
+				errorMsg("Please input a number from 0 to 9 for each number");
 		} while (rangeNum1 < 0 || rangeNum2 > 9 || rangeNum2 <= rangeNum1);
 		break;
 
 	case 3: main(); break;
 
-	default: cout << "Error: Please input a number from 1 to 5." << endl << endl;
+	default: 
+		errorMsg("Please input a number from 1 to 5.");
 		config();
 	}
 }
@@ -517,7 +542,7 @@ void feature() {
 	cout << "*** Menu ***\n"
 		<< "[1] Statistic\n"
 		<< "[2] Gamemode\n"
-		<< "[3] Show Rules\n"
+		<< "[3] Displaying Rules\n"
 		<< "****************\n"
 		<< "\n"
 		<< "Option (1-3): ";
@@ -525,28 +550,34 @@ void feature() {
 
 	switch (option) {
 	case 1:
+		char option2;
+
 		cout << "Puzzles played: " << countPlay << endl
 			<< "Puzzles wined: " << countWin << endl
 			<< "Puzzles losed: " << countLose << endl
 			<< "press q to return to menu: ";
-		char option2;
+		
 		cin >> option2;
 		if (option2 == 'q' || option2 == 'Q')
 			cout << endl;
 		menu();
 		break;
+
 	case 2:
 		char option3;
+
 		cout << "Current Gamemode: Default" << endl
 			<< "Type y to change to 'Tidy' Mode, type anything else to cancel: ";
+
 		cin >> option3;
-		if (option3 == 'y' || option3 == 'Y') 
+		if (option3 == 'y' || option3 == 'Y')
 			mode = 1;
 		menu();
 		break;
+
 	case 3:
 		break;
-	default: cout << endl << "Error: Please input a number from 1 to 2." << endl << endl; menu();
+	default: errorMsg("Please input a number from 1 to 3"); feature();
 	}
 
 	return;
@@ -554,40 +585,39 @@ void feature() {
 
 //Credit
 void credit() {
-	char option4;
-	cout << setw(20) << "Credits:" << endl
-		<< "21043941A HON Sin Hang Aaron 203A" << endl
-		<< "21000210A Yeung Miu Wan 203A" << endl
-		<< "21132728A Li Yin Cheung 203A" << endl
-		<< "21073380A Chu Kiu Tsun 203A" << endl
-		<< "21079810A Chu Sik Hin 203A" << endl
-		<< "press q to return to menu: ";
-	cin >> option4;
-	if (option4 == 'q' || option4 == 'Q')
-		cout << endl;
+	newPage();
+
+	int margin = 2;
+	char option;
+	cout << setw(margin) << "" << "Credits:" << endl
+		<< setw(margin) << "" << "21043941A HON Sin Hang Aaron 203A" << endl
+		<< setw(margin) << "" << "21000210A Yeung Miu Wan 203A" << endl
+		<< setw(margin) << "" << "21132728A Li Yin Cheung 203A" << endl
+		<< setw(margin) << "" << "21073380A Chu Kiu Tsun 203A" << endl
+		<< setw(margin) << "" << "21079810A Chu Sik Hin 203A" << endl << endl;
+
+	anyKey();
 	menu();
 	return;
 }
 
 //Exit
 void exits() {
+	newPage();
+
 	char ch;
-	cout << "Press Q to stop the game" << endl;
+	cout << "Close the game? Please noted that your data will be lost when closing the game" << endl
+		<< "Enter y for yes, n for no." << endl;
 	cin >> ch;
-	if (ch == 'Q') {
-		cout << "Stop the game?" << endl;
-		cout << "Press 'y' or 'Y' to confirm, 'n' or 'N' to cancel." << endl;
-		cin >> ch;
-		if (ch == 'y' || ch == 'Y')
-			cout << "Game end ! See you again!" << endl;
-		return;
-		if (ch == 'n' || ch == 'N') {
-			cout << "game continued!" << endl;
-			menu();
-		}
+
+	if (ch == 'n' || ch == 'N'){
+		cout << "Game continued!" << endl << "Returning to Main menu...";
+		this_thread::sleep_for(chrono::milliseconds(1000)); 
+		menu();
 	}
-	else {
-		cout << "Please press Q to stop the game" << endl;
+	else if (ch == 'y' || ch == 'Y') exit(0); //Program terminates
+	else { 
+		errorMsg("Please enter y for yes, n for no."); 
 		exits();
 	}
 	return;
