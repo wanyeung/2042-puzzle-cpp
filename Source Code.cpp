@@ -14,7 +14,7 @@ using namespace std;
 
 //Global variable
 int margin = 20;
-int totalPiece = 15, digitFloor = 0, digitCeiling = 5;
+int totalPiece = 25, digitFloor = 0, digitCeiling = 5;
 int countPlay = 0, countWin = 0, countLose = 0;
 bool mode = 0, rule = 0;
 
@@ -31,7 +31,7 @@ void divder() {
 
 void newPage() {
 	divder();
-	for (int i = 0; i < 25; i++)
+	for (int i = 0; i < 27; i++)
 		cout << endl;
 };
 
@@ -177,7 +177,8 @@ private:
 
 void menu();
 void game();
-void gameBoard(Piece puzzle[]);
+void rules();
+void gameBoard(Piece [], int &);
 void GenerateNSEW(int&, int&, int&, int&);
 void config();
 void feature();
@@ -228,237 +229,269 @@ void menu() {
 	return;
 }
 
+int searchIndex(int page) {
+	int l = 65;
+	switch (page) {
+		case 1: l = 65; break;
+		case 2: l = 70; break;
+		case 3: l = 75; break;
+		case 4: l = 80; break;
+		case 5: l = 86; break;
+		default: errorMsg("");
+	}
+	return l;
+}
+
 //Start the game
 void game() {
 	newPage(); countPlay += 1;
-	cout << "Game started! Now generating your puzzle...";
-	this_thread::sleep_for(chrono::milliseconds(1000)); 
+	cout << "Game started! Now generating your puzzle..." << endl;
+	this_thread::sleep_for(chrono::milliseconds(2000)); 
 
-	// Algorithm: solution[] letter -> digitNSEW -> puzzle[] digitNSEW -> 
+	// Algorithm: solution[] digitNSEW -> letter -> saved to puzzle[] -> puzzle[] rotate
+
 
 	// Generate the solution
 	Piece* solution = new Piece[totalPiece];
 
-	for (int pieceID = 0; pieceID < totalPiece; pieceID++) {
-		int l = pieceID + 65, N = 0, S = 0, E = 0, W = 0; //Generate the letter from A-Z
+	// Generate digitNSEW and letter
+	for (int pieceID = 0; pieceID < totalPiece; pieceID++) 
+	{
+		int N = 0, S = 0, E = 0, W = 0;
 
-		//Generate the random digitNSEW for piece1
-		if (pieceID == 0) GenerateNSEW(N, S, E, W);
-		else if (pieceID % 5 != 0) 
-		{ //Generate all left pieces except piece1 
+		if (pieceID == 0) GenerateNSEW(N, S, E, W); //For piece1
+		else if (pieceID % 5 != 0) { //For the first pieces of the row
 			GenerateNSEW(N, S, E, W);
 			W = solution[pieceID - 1].getDigit('E');
 		}
-		else 
-		{ //Generate all other pieces
+		else { //Other pieces
 			GenerateNSEW(N, S, E, W);
 			N = solution[pieceID - 5].getDigit('S');
 			E = solution[pieceID - 1].getDigit('W');
 		}
 
+		// Random repeatable letter excluding Q
+		int l = 65 + rand() % (totalPiece+1);
+		while (l == 'Q') {
+			l = 65 + rand() % (totalPiece+1);
+		}
+
 		solution[pieceID].setPiece(l, N, S, E, W);
-		/*
-		//For Debugging
-		cout << l << " " << N << " " << S << " " << E << " " << W << " done " <<  pieceID << endl;
-		*/
+		// cout << l << " " << N << " " << S << " " << E << " " << W << " done " <<  pieceID << endl; //For Debugging
 	}
 
-	//Putting the digit of solution in puzzle[]
+	// Transforming letter
+	for (int pieceID = 1; pieceID < totalPiece;) { //The first letter won't be Q
+		bool invalid = 0; //invalid means repeated letter or the letter is Q
+
+		if (solution[pieceID].getLetter() == 'Q') 
+			invalid = 1;
+
+		for (int i = 0; i < (totalPiece - 1); i++) {
+			if (solution[pieceID].getLetter() == solution[i].getLetter() && i != pieceID) 
+				invalid = 1;
+		}
+
+		if(invalid == 0) pieceID++;
+		else solution[pieceID].setLetter(65 + rand() % (totalPiece+1));
+	}
+
+	/* //For Debugging
+	for(int pieceID=0;  pieceID < totalPiece; pieceID++){
+		cout << "Now is piece" << pieceID << endl;
+		solution[pieceID].print(); divder();
+	} */
+	
 	Piece* puzzle = new Piece[totalPiece];
 
 	for (int pieceID = 0; pieceID < totalPiece; pieceID++) {
+		//Saved to puzzle[]
 		puzzle[pieceID].setPiece(
-			65 + rand() % totalPiece,
+			solution[pieceID].getLetter(),
 			solution[pieceID].getDigit('N'),
 			solution[pieceID].getDigit('S'),
 			solution[pieceID].getDigit('E'),
 			solution[pieceID].getDigit('W')
 		);
-		/*//For Debugging
-		cout << puzzle[pieceID].getLetter() << " ";
-		*/
-	}
 
-	//Transforming the letter
-	for (int pieceID = 1; pieceID < totalPiece;) {
-		bool change = 0;
-
-		for (int i = 0; i < (totalPiece - 1); i++) {
-			if (puzzle[pieceID].getLetter() == puzzle[i].getLetter() && i != pieceID) {
-				change = 1;
-			}
-		}
-
-		if (change == 0)
-			pieceID++;
-
-		else {
-			puzzle[pieceID].setLetter(65 + rand() % totalPiece);
-			solution[pieceID].setLetter(puzzle[pieceID].getLetter());   //Save puzzle[] to solution[]
-		}
-	}
-
-	/*
-	//For Debugging
-	 for(int pieceID=0;  pieceID < totalPiece; pieceID++)
-		cout << endl << puzzle[pieceID].getLetter() << " ";
-	for(int pieceID=0;  pieceID < totalPiece; pieceID++)
-		puzzle[pieceID].print();
-	*/
-
-
-	for (int pieceID = 0; pieceID < totalPiece; pieceID++) {
-		//Rotating the pieces in puzzle[] which is playable puzzle
+		//Rotate the pieces
 		int randNum = 1 + rand() % 4;
 		for (int i = 1; i != randNum; i++)
 			puzzle[pieceID].rotate('c');
+	}
 
+
+
+	for (int pieceID = 0; pieceID < totalPiece; pieceID++) {
 		//Set Location of pieces
-		char column;
-		int row;
+		char column; int row;
 
 		switch (pieceID % 5) {
-		case 0: column = 'A'; break;
-		case 1: column = 'B'; break;
-		case 2: column = 'C'; break;
-		case 3: column = 'D'; break;
-		case 4: column = 'E'; break;
-		default: errorMsg("");
+			case 0: column = 'A'; break;
+			case 1: column = 'B'; break;
+			case 2: column = 'C'; break;
+			case 3: column = 'D'; break;
+			case 4: column = 'E'; break;
+			default: errorMsg("");
 		}
 
 		if (pieceID < 5) row = 1;
-		else if (pieceID >= 5 && pieceID <= 9) row = 2;
-		else if (pieceID >= 10 && pieceID <= 14) row = 3;
-		else if (pieceID >= 15 && pieceID <= 19) row = 4;
-		else row = 5;
+			else if (pieceID >= 5 && pieceID <= 9) row = 2;
+			else if (pieceID >= 10 && pieceID <= 14) row = 3;
+			else if (pieceID >= 15 && pieceID <= 19) row = 4;
+			else row = 5;
 
 		puzzle[pieceID].setLocation(column, row, 0);
+		solution[pieceID].setLocation(column, row, 1);
 
-		/*
-		//For Debugging
+		/* //For Debugging
 		   cout << pieceID << " Column: " << puzzle[pieceID].getColumn() << " Row: " << puzzle[pieceID].getRow()
 		   << " Placed: " << puzzle[pieceID].getPlaced() << endl;
 	   */
-	}
+	}	
+	
+	rules();
+	int page = 5;
 
-	gameBoard(puzzle);
-
+	gameBoard(puzzle, page);
 	return;
 }
 
-//Print Game Board
-void gameBoard(Piece puzzle[]) {
+void rules() {
+	newPage();
+	divder();
+	cout << setw(margin * 2 - 4) << "" << "Rules:" << endl << endl;
+	cout << setw(margin-9) << "" << "To win, place all the puzzle piece into the gameboard." << endl
+		<< setw(margin-11) << "" << "Make sure all the touching digit of pieces are same. E.g." << endl << endl
+		<< setw(margin + 9) << "" << "piecesA" << "     " << "piecesB" << endl
+		<< setw(margin + 9) << "" << "   0   " << "     " << "   1   " << endl
+		<< setw(margin + 9) << "" << "  2A3  " << "     " << "  3B4  " << endl
+		<< setw(margin + 9) << "" << "   5   " << "     " << "   6   " << endl;
+	cout << endl << endl << endl 
+		<< setw(margin * 2 - 4) << "" << "Enjoy!" << endl << endl;
+	
+	divder();
+	cout << endl << endl << endl << endl << endl << endl << endl << endl;
 
+	anyKey();
+	return;
+}
 
-	(rule == 0) ? cout << left << setw(10) << "  Rule:" << right << setw(margin - 10) << "" :
-		cout << setw(margin) << "";
+//Printing Game Board
+void gameBoard(Piece puzzle[], int & page) {
+	newPage();
 
-	cout << setw(16) << "A  B  C  D  E";
-	if (mode == 0)
-		cout << setw(37) << "+-----^^^------+";
+	//Header
+	cout << left << setw(10) << "Gamemode : " << right << setw(margin - 10) << ""
+		<< setw(15) << "A  B  C  D  E";
+
+	if (mode == 0) cout << setw(37) << "+-----^^^------+"; //Not-Yet-Placed box
+
+	cout << endl
+		<< left << setw(10) << ((mode == 0) ? " Default" : " Tidy Mode") << right << setw(margin - 10) << ""
+		<< " +---------------+";
+
+	if (mode == 0) cout << setw(35) << "|Not-Yet-Placed|"; //Not-Yet-Placed box
 
 	cout << endl;
 
-	(rule == 0) ? cout << left << setw(10) << "  Rule:" << right << setw(margin - 10) << "" :
-		cout << setw(margin) << "";
+	//Print from Row 1 of the game board to the last row (Row 15)
+	for (int r = 0, row = 1; row <= 5 && r <= 15; r++) { 
+		//r is the row for console, row is row of gameboard
 
-	cout << " +---------------+";
-	if (mode == 0) {
-		cout << setw(35) << "|Not-Yet-Placed|";
-	}
-	cout << endl;
+		if (r % 3 == 2) row++; //After printed digitS, switch to next row of gameboard
 
-
-
-	for (int row = 1, r = 0, l = 65; row <= 5 && r <= 15; r++) {
-
+		// For the row without row number index 
 		if (r % 3 == 0 || r % 3 == 2) {
 			cout << setw(margin) << "" << " |";
+
 			for (int column = 65; column <= 69; column++) {
-				//Debugging
-				//cout << endl << "Now is column" << (char) column << endl;
+				bool noMatchedPieces = 1;
 
-				bool noExistedPieces = 1;
+				//Searching for the matched pieces
 				for (int pieceID = 0; pieceID < totalPiece; pieceID++) {
-					/*
-					//Debugging
-					cout << endl << "Now is pieceID" << pieceID << " " << puzzle[pieceID].getRow() << " " <<
-					(int)puzzle[pieceID].getColumn() << endl;
-					//cout << "Row:" << row << " Column:" << column << endl;
-					*/
-
-					if ((puzzle[pieceID].getPlaced() == 0)
+					if ((puzzle[pieceID].getPlaced() == 1)
 						&& row == puzzle[pieceID].getRow() && column == ((int)puzzle[pieceID].getColumn())) {
 						if (r % 3 == 0) cout << " " << puzzle[pieceID].getDigit('N') << " ";
 						if (r % 3 == 2) cout << " " << puzzle[pieceID].getDigit('S') << " ";
-						noExistedPieces = 0;
+						noMatchedPieces = 0;
 					}
 				}
-				if (noExistedPieces == 1) cout << "   ";
+				if (noMatchedPieces == 1) cout << "   ";
 			}
-			if (r % 3 == 2)
-				row++;
 		}
 
-
+		// For the row with row number index
 		if (r % 3 == 1) {
-			HANDLE console_color;
-			// Color of the console
-			console_color = GetStdHandle(STD_OUTPUT_HANDLE);
+			HANDLE console_color; 
+			console_color = GetStdHandle(STD_OUTPUT_HANDLE); // Color of the console
 
 			cout << setw(margin) << "" << row << "|";
+
 			for (int column = 65; column <= 69; column++) {
-				bool noExistedPieces = 1;
+				bool noMatchedPieces = 1;
+
+				//Searching for the matched pieces
 				for (int pieceID = 0; pieceID < totalPiece; pieceID++) {
-					if ((puzzle[pieceID].getPlaced() == 0)
+					if ((puzzle[pieceID].getPlaced() == 1)
 						&& row == puzzle[pieceID].getRow() && column == ((int)puzzle[pieceID].getColumn())) {
-						cout << puzzle[pieceID].getDigit('W');
-						SetConsoleTextAttribute(console_color, 8); // light grey 
-						cout << puzzle[pieceID].getLetter() << "\033[0;37m" << puzzle[pieceID].getDigit('E');
-						noExistedPieces = 0;
+
+							cout << puzzle[pieceID].getDigit('W');
+								SetConsoleTextAttribute(console_color, 8); // light grey 
+							cout << puzzle[pieceID].getLetter() << "\033[0;37m" 
+								<< puzzle[pieceID].getDigit('E');
+
+							noMatchedPieces = 0;
 					}
 				}
-				if (noExistedPieces == 1) cout << "   ";
+				if (noMatchedPieces == 1) cout << "   ";
 			}
 		}
 
-		cout << "\033[0;37m";
-		cout << "|";
+		cout << "\033[0;37m" << "|";
 
-		//Not-Yet-Placed
-		if (mode == 0) {
-			HANDLE console_color;
-			// Color of the console
-			console_color = GetStdHandle(STD_OUTPUT_HANDLE);
-			int placedRow = 0;
-			for (int pieceID = 0; pieceID < totalPiece && placedRow == 0; pieceID++) {
-				if ((char)puzzle[pieceID].getLetter() == l && l <= 90 && l != 81) {
-					if (r % 3 == 0) {
-						cout << setw(20) << "|" << setw(6) << " ";
-						SetConsoleTextAttribute(console_color, 4);
-						cout << puzzle[pieceID].getDigit('N') << "\033[0;37m" << " " << setw(7) << " |";
-					}
-					if (r % 3 == 1) {
-						cout << setw(20) << "|" << setw(6);
-						SetConsoleTextAttribute(console_color, 4);
-						cout << puzzle[pieceID].getDigit('W') << (char)l << puzzle[pieceID].getDigit('E') << "\033[0;37m" << setw(7) << " |";
-					}
-					if (r % 3 == 2) {
-						cout << setw(20) << "|" << setw(6) << " ";
-						SetConsoleTextAttribute(console_color, 4);
-						cout << puzzle[pieceID].getDigit('S') << "\033[0;37m" << " " << setw(7) << " |"; l++;
-					}
-					placedRow = 1;
-					cout << "\033[0;37m";
+		if (mode == 1) { cout << endl; continue; } // If mode is "Tidy mode", do not print the pieces List
+
+		//Not-Yet-Placed Pieces List
+		HANDLE console_color; 
+		console_color = GetStdHandle(STD_OUTPUT_HANDLE); // Color of the console
+
+		int placedRow = 0, l = (row-1) + searchIndex(page);
+		bool noMatchedPieces = 0;
+		if (l >= 81) l += 1;
+
+		for (int pieceID = 0; pieceID < totalPiece && placedRow == 0; pieceID++) {
+			if (puzzle[pieceID].getLetter() == l) {
+				noMatchedPieces = 1;
+				if (r % 3 == 0) {
+					cout << setw(20) << "|" << setw(6) << " ";
+					SetConsoleTextAttribute(console_color, 4);
+					cout << puzzle[pieceID].getDigit('N') << "\033[0;37m" << " " << setw(7) << " |";
 				}
+				if (r % 3 == 1) {
+					cout << setw(20) << "|" << setw(6);
+					SetConsoleTextAttribute(console_color, 4);
+					cout << puzzle[pieceID].getDigit('W') << (char)l << puzzle[pieceID].getDigit('E') << "\033[0;37m" << setw(7) << " |";
+				}
+				if (r % 3 == 2) {
+					cout << setw(20) << "|" << setw(6) << " ";
+					SetConsoleTextAttribute(console_color, 4);
+					cout << puzzle[pieceID].getDigit('S') << "\033[0;37m" << " " << setw(7) << " |";
+				}
+				placedRow = 1;
+				cout << "\033[0;37m";
 			}
 		}
+		 if (noMatchedPieces == 0) 
+			cout << setw(20) << "|" << setw(6) << "   " << setw(9) << " |";
+
 		cout << endl;
 	}
 
+	//Last line
 	cout << setw(margin) << "" << " +---------------+" << setw(35);
-	if (mode == 0)
-		cout << "+-----vvv------+" << endl;
+	if (mode == 0) cout << "+-----vvv------+" << endl;
+
 
 }
 
