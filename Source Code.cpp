@@ -331,17 +331,21 @@ void gameBoard(Piece puzzle[]) {
 			cout << setw(margin) << "";
 
 		cout << setw(16) << "A  B  C  D  E";
-
+		if (mode == 0) 
 		cout << setw(37) << "+-----^^^------+";
-
+		
 		cout << endl;
 
 		(rule == 0) ? cout << left << setw(10) << "  Rule:" << right << setw(margin - 10) << "" :
 			cout << setw(margin) << "";
 
 		cout << " +---------------+";
-		cout << setw(35) << "|Not-Yet-Placed|" << endl;
-	
+		if (mode == 0) {
+			cout << setw(35) << "|Not-Yet-Placed|";
+		}
+		cout << endl;
+			
+		
 
 	for (int row = 1, r = 0, l = 65; row <= 5 && r <= 15; r++) {
 
@@ -428,7 +432,9 @@ void gameBoard(Piece puzzle[]) {
 		cout << endl;
 	}
 
-	cout << setw(margin) << "" << " +---------------+" << setw(35) << "+-----vvv------+" << endl;
+	cout << setw(margin) << "" << " +---------------+" << setw(35);
+	if(mode == 0)
+	cout << "+-----vvv------+" << endl;
 
 }
 
