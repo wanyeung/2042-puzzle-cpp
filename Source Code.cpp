@@ -46,7 +46,7 @@ void welcome() {
 	int margin = 2;
 
 	// Instruction for gaming environment, 80 is the default terminal size
-	cout << "Hints: Make sure your terminal width are 80 characters or above" << endl 
+	cout << "Hints: Make sure your terminal width are 80 characters or above" << endl
 		<< "Loading..." << endl << endl;
 	this_thread::sleep_for(chrono::milliseconds(1000)); //waiting for 1second
 
@@ -100,7 +100,7 @@ public:
 		case 'a':
 			digitN = digitE; digitE = digitS; digitS = digitW; digitW = temp; break;
 		case 'q': break;
-		default: 
+		default:
 			divder();  errorMsg("Please enter c for clockwise, a for anticlockwise, q for cancel");
 			return 1;
 		}
@@ -180,7 +180,7 @@ private:
 void menu();
 void game();
 void rules();
-void gameBoard(Piece [], int &);
+void gameBoard(Piece[], int&);
 void GenerateNSEW(int&, int&, int&, int&);
 void config();
 void feature();
@@ -218,6 +218,12 @@ void menu() {
 		<< setw(margin) << "" << "\n"
 		<< setw(margin) << "" << "Option (1-5): ";
 	cin >> option;
+	if (cin.fail()) { // check whether last input was failed
+		cin.clear(); // Reset the input error status to no error
+		cin.ignore(255, '\n'); // ignore maximum of 255 characters,
+		 // or reached end of line.
+	}
+
 	divder();
 
 	switch (option) {
@@ -226,9 +232,9 @@ void menu() {
 	case 3: feature(); break;
 	case 4: credit();  break;
 	case 5: exits();  break;
-	default: 
+	default:
 		errorMsg("Please enter a number from 1 to 5.");
-		divder(); 
+		divder();
 		anyKey();
 		menu();
 	}
@@ -239,12 +245,12 @@ void menu() {
 int searchIndex(int page) {
 	int l = 65;
 	switch (page) {
-		case 1: l = 65; break;
-		case 2: l = 70; break;
-		case 3: l = 75; break;
-		case 4: l = 80; break;
-		case 5: l = 86; break;
-		default: errorMsg("");
+	case 1: l = 65; break;
+	case 2: l = 70; break;
+	case 3: l = 75; break;
+	case 4: l = 80; break;
+	case 5: l = 86; break;
+	default: errorMsg("");
 	}
 	return l;
 }
@@ -326,8 +332,6 @@ void game() {
 		for (int i = 1; i != randNum; i++)
 			puzzle[pieceID].rotate('c');
 	}
-
-
 
 	for (int pieceID = 0; pieceID < totalPiece; pieceID++) {
 		//Set Location of pieces
@@ -414,6 +418,12 @@ void game() {
 					<< setw(margin) << "" << "Enter [3] to go to previous page" << endl
 					<< setw(margin) << "" << "Option (1-3): ";
 				cin >> option;
+				if (cin.fail()) { // check whether last input was failed
+					cin.clear(); // Reset the input error status to no error
+					cin.ignore(255, '\n'); // ignore maximum of 255 characters,
+					 // or reached end of line.
+				}
+
 				switch (option) {
 				case 1: break;
 				case 2:
@@ -424,7 +434,7 @@ void game() {
 					page -= 1;
 					if (page < 1) page = 1;
 					gameBoard(puzzle, page); break;
-				default: errorMsg("Please enter a number from 1 to 3");
+				default: errorMsg("Please enter a number from 1 to 3"); break;
 				}
 			}
 		}
@@ -434,6 +444,9 @@ void game() {
 		char index = 'A';
 
 		for (bool matched = 0; matched != 1;) {
+			HANDLE console_color;
+			console_color = GetStdHandle(STD_OUTPUT_HANDLE); // Color of the console
+
 			cout << endl << endl << "Please enter the index to select a piece: ";
 			cin >> index;
 
@@ -442,7 +455,9 @@ void game() {
 			for (int pieceID = 0; pieceID < totalPiece; pieceID++) {
 				if (puzzle[pieceID].getLetter() == index) {
 					selectedPiece = pieceID;
+					SetConsoleTextAttribute(console_color, 8);
 					cout << setw(margin) << "" << "You have selected piece" << index << endl;
+					cout << "\033[0;37m";
 					matched = 1;
 				}
 			}
@@ -459,8 +474,11 @@ void game() {
 		if (mode == 0 && puzzle[selectedPiece].getPlaced() == 1) {
 			char option = '0';
 
+			bool valid = 0; // debugging
+
 			for (bool valid = 0; valid == 0;) {
 				cout << endl << "Enter y to take out the piece from board, n to cancel";
+				cin >> option;
 				if (option == 'y' || option == 'Y') {
 					puzzle[selectedPiece].setPlaced(0);
 					valid = 1;
@@ -482,6 +500,12 @@ void game() {
 					<< setw(margin) << "" << "Enter [3] to unselect piece" << index << endl
 					<< setw(margin) << "" << "Option (1-3): ";
 				cin >> option;
+				if (cin.fail()) { // check whether last input was failed
+					cin.clear(); // Reset the input error status to no error
+					cin.ignore(255, '\n'); // ignore maximum of 255 characters,
+					 // or reached end of line.
+				}
+
 
 				switch (option) {
 				case 1:
@@ -495,6 +519,7 @@ void game() {
 							gameBoard(puzzle, page);
 						}
 					}
+					rotated = 0;
 					break;
 
 				case 2:
@@ -505,6 +530,12 @@ void game() {
 						if (column == 'Q' || column == 'q') break;
 						cout << "Enter the row to place piece" << index << " : ";
 						cin >> row;
+						if (cin.fail()) { // check whether last input was failed
+							cin.clear(); // Reset the input error status to no error
+							cin.ignore(255, '\n'); // ignore maximum of 255 characters,
+							 // or reached end of line.
+						}
+
 						round++;
 
 						if (((int)column > 64 && (int)column < 70) && (row > 0 && row < 6)) {
@@ -627,16 +658,16 @@ void rules() {
 	newPage();
 	divder();
 	cout << setw(margin * 2 - 4) << "" << "Rules:" << endl << endl;
-	cout << setw(margin-9) << "" << "To win, place all the puzzle piece into the gameboard." << endl
-		<< setw(margin-11) << "" << "Make sure all the touching digit of pieces are same. E.g." << endl << endl
+	cout << setw(margin - 9) << "" << "To win, place " << "\033[0;31m" << "all" << "\033[0;37m" << " the puzzle piece into the gameboard." << endl
+		<< setw(margin - 11) << "" << "Make sure all the touching digit of pieces are same. E.g." << endl << endl
 		<< setw(margin + 9) << "" << "piecesA" << "     " << "piecesB" << endl
 		<< setw(margin + 9) << "" << "   0   " << "     " << "   1   " << endl
-		<< setw(margin + 9) << "" << "  2A3  " << "     " << "  3B4  " << endl
+		<< setw(margin + 9) << "" << "  2A" << "\033[0;31m" << "3  " << "\033[0;37m"  << "     " << "\033[0;31m" << "  3" << "\033[0;37m" << "B4  " << endl
 		<< setw(margin + 9) << "" << "   5   " << "     " << "   6   " << endl;
 	cout << endl << setw(margin - 11) << "" << "Remember you can always quit the game by entering Q." << endl;
-	cout << endl << endl << endl 
+	cout << endl << endl << endl
 		<< setw(margin * 2 - 4) << "" << "Enjoy!" << endl << endl;
-	
+
 	divder();
 	cout << endl << endl << endl << endl << endl << endl << endl << endl;
 
@@ -645,32 +676,34 @@ void rules() {
 }
 
 //Printing Game Board
-void gameBoard(Piece puzzle[], int & page) {
-	if(mode != 3) newPage();
+void gameBoard(Piece puzzle[], int& page) {
+	if (mode != 3) newPage();
 	else margin = 30;
 
 	//Header
 	if (mode != 3) {
-		cout << left << setw(margin-10) << "Gamemode : " << right << setw(margin - 10) << ""
-			<< setw(margin-5) << "A  B  C  D  E";
-	}else cout << setw(margin+16) << "A  B  C  D  E";
+		cout << left << setw(margin - 10) << "Gamemode : " << right << setw(margin - 10) << ""
+			<< setw(margin - 5) << "A  B  C  D  E";
+	}
+	else cout << setw(margin + 16) << "A  B  C  D  E";
 
-	if (mode == 0) cout << setw(margin+17) << "+-----^^^------+"; //Not-Yet-Placed box
+	if (mode == 0) cout << setw(margin + 17) << "+-----^^^------+"; //Not-Yet-Placed box
 
 	cout << endl;
 
 	if (mode != 3) {
-		cout << left << setw(margin-10) << ((mode == 0) ? " Default" : " Easy Mode") << right << setw(margin - 10) << ""
+		cout << left << setw(margin - 10) << ((mode == 0) ? " Default" : " Easy Mode") << right << setw(margin - 10) << ""
 			<< " +---------------+";
-	}else cout << setw(margin+18) << " +---------------+";
+	}
+	else cout << setw(margin + 18) << " +---------------+";
 
 
-	if (mode == 0) cout << setw(margin+15) << "|Not-Yet-Placed|"; //Not-Yet-Placed box
+	if (mode == 0) cout << setw(margin + 15) << "|Not-Yet-Placed|"; //Not-Yet-Placed box
 
 	cout << endl;
 
 	//Print from Row 1 of the game board to the last row (Row 14)
-	for (int r = 0, row = 1; row <= 5 && r < 15; r++) { 
+	for (int r = 0, row = 1; row <= 5 && r < 15; r++) {
 		//r is the row for console, row is row of gameboard
 
 		// For the row without row number index 
@@ -682,10 +715,22 @@ void gameBoard(Piece puzzle[], int & page) {
 
 				//Searching for the matched pieces
 				for (int pieceID = 0; pieceID < totalPiece; pieceID++) {
+					HANDLE console_color;
+					console_color = GetStdHandle(STD_OUTPUT_HANDLE); // Color of the console
 					if ((puzzle[pieceID].getPlaced() == 1)
 						&& row == puzzle[pieceID].getRow() && column == ((int)puzzle[pieceID].getColumn())) {
-						if (r % 3 == 0) cout << " " << puzzle[pieceID].getDigit('N') << " ";
-						if (r % 3 == 2) cout << " " << puzzle[pieceID].getDigit('S') << " ";
+						if (r % 3 == 0) {
+							cout << " ";
+							SetConsoleTextAttribute(console_color, 8);
+							cout << puzzle[pieceID].getDigit('N') << " ";
+							cout << "\033[0;37m";
+						}
+						if (r % 3 == 2) {
+							cout << " ";
+							SetConsoleTextAttribute(console_color, 8);
+							cout << puzzle[pieceID].getDigit('S') << " ";
+							cout << "\033[0;37m";
+						}
 						noMatchedPieces = 0;
 					}
 				}
@@ -696,7 +741,7 @@ void gameBoard(Piece puzzle[], int & page) {
 
 		// For the row with row number index
 		if (r % 3 == 1) {
-			HANDLE console_color; 
+			HANDLE console_color;
 			console_color = GetStdHandle(STD_OUTPUT_HANDLE); // Color of the console
 
 			cout << setw(margin) << "" << row << "|";
@@ -708,13 +753,15 @@ void gameBoard(Piece puzzle[], int & page) {
 				for (int pieceID = 0; pieceID < totalPiece; pieceID++) {
 					if ((puzzle[pieceID].getPlaced() == 1)
 						&& row == puzzle[pieceID].getRow() && column == ((int)puzzle[pieceID].getColumn())) {
+						SetConsoleTextAttribute(console_color, 8);
+						cout << puzzle[pieceID].getDigit('W');
+						cout << "\033[0;37m";
+						cout << puzzle[pieceID].getLetter();
+						SetConsoleTextAttribute(console_color, 8);
+						cout << puzzle[pieceID].getDigit('E');
+						cout << "\033[0;37m";
 
-							cout << puzzle[pieceID].getDigit('W');
-								SetConsoleTextAttribute(console_color, 8); // light grey 
-							cout << puzzle[pieceID].getLetter() << "\033[0;37m" 
-								<< puzzle[pieceID].getDigit('E');
-
-							noMatchedPieces = 0;
+						noMatchedPieces = 0;
 					}
 				}
 				if (noMatchedPieces == 1) cout << "   ";
@@ -725,13 +772,14 @@ void gameBoard(Piece puzzle[], int & page) {
 
 		if (mode != 0) {
 			if (r % 3 == 2) row++; //After printed digitS, switch to next row of gameboard
-			cout << endl; continue; } // If mode is "Easy mode", do not print the pieces List
+			cout << endl; continue;
+		} // If mode is "Easy mode", do not print the pieces List
 
-		//Not-Yet-Placed Pieces List
-		HANDLE console_color; 
+//Not-Yet-Placed Pieces List
+		HANDLE console_color;
 		console_color = GetStdHandle(STD_OUTPUT_HANDLE); // Color of the console
 
-		int placedRow = 0, l = (row-1) + searchIndex(page);
+		int placedRow = 0, l = (row - 1) + searchIndex(page);
 		bool noMatchedPieces = 0;
 		if (l >= 81 && l < 86) l += 1;
 
@@ -757,7 +805,7 @@ void gameBoard(Piece puzzle[], int & page) {
 				cout << "\033[0;37m";
 			}
 		}
-		 if (noMatchedPieces == 0) 
+		if (noMatchedPieces == 0)
 			cout << setw(margin) << "|" << setw(6) << "   " << setw(9) << " |";
 
 		cout << endl;
@@ -795,21 +843,38 @@ void config() {
 	newPage();
 
 	int margin = 2;
+	HANDLE console_color;
+	console_color = GetStdHandle(STD_OUTPUT_HANDLE); // Color of the console
 
 	int option, pieceNum, rangeNum1, rangeNum2;
 	cout << setw(margin) << "" << "*** Settings Menu ***" << endl
-		<< setw(margin) << "" << "[1] Change Number of puzzle piece \n\t-> Current: " << totalPiece << endl
-		<< setw(margin) << "" << "[2] Change Range of random number \n\t-> Current: " << digitFloor << " - " << digitCeiling << endl
+		<< setw(margin) << "" << "[1] Change Number of puzzle piece \n\t";
+	    SetConsoleTextAttribute(console_color, 8);
+		cout << "-> Current: " << totalPiece << "\033[0;37m" << endl
+			<< setw(margin) << "" << "[2] Change Range of random number \n\t";
+		SetConsoleTextAttribute(console_color, 8);
+		cout << "-> Current: " << digitFloor << " - " << digitCeiling << "\033[0;37m" << endl
 		<< setw(margin) << "" << "[3] Return to Main Menu" << endl
 		<< setw(margin) << "" << "***************************" << endl << endl
 		<< setw(margin) << "" << "Option (1-3): ";
 	cin >> option;
+	if (cin.fail()) { // check whether last input was failed
+		cin.clear(); // Reset the input error status to no error
+		cin.ignore(255, '\n'); // ignore maximum of 255 characters,
+		 // or reached end of line.
+	}
+
 
 	switch (option) {
 	case 1:
 		do {
 			cout << "Input a new value for Number of puzzle piece (from 1-25): ";
 			cin >> pieceNum;
+			if (cin.fail()) { // check whether last input was failed
+				cin.clear(); // Reset the input error status to no error
+				cin.ignore(255, '\n'); // ignore maximum of 255 characters,
+				 // or reached end of line.
+			}
 
 			//Checking for Valid input
 			if (pieceNum >= 1 && pieceNum <= 25) {
@@ -828,6 +893,11 @@ void config() {
 			cin >> rangeNum1;
 			cout << "to ";
 			cin >> rangeNum2;
+			if (cin.fail()) { // check whether last input was failed
+				cin.clear(); // Reset the input error status to no error
+				cin.ignore(255, '\n'); // ignore maximum of 255 characters,
+				 // or reached end of line.
+			}
 
 			//Checking for Valid input
 			if (rangeNum1 >= 0 && rangeNum2 >= rangeNum1 && rangeNum2 <= 9) {
@@ -842,7 +912,7 @@ void config() {
 
 	case 3: anyKey(); menu(); break;
 
-	default: 
+	default:
 		errorMsg("Please input a number from 1 to 3.");
 		config();
 	}
@@ -861,6 +931,12 @@ void feature() {
 		<< "\n"
 		<< "Option (1-3): ";
 	cin >> option;
+	if (cin.fail()) { // check whether last input was failed
+		cin.clear(); // Reset the input error status to no error
+		cin.ignore(255, '\n'); // ignore maximum of 255 characters,
+		 // or reached end of line.
+	}
+
 	divder();
 
 	switch (option) {
@@ -896,7 +972,7 @@ void feature() {
 			menu();
 			break;
 		}
-		
+
 		cout << setw(margin) << "" << "*** Menu ***\n"
 			<< setw(margin) << "" << "[1] Show the saved puzzle\n"
 			<< setw(margin) << "" << "[2] Show the solution of the puzzle\n"
@@ -904,17 +980,23 @@ void feature() {
 			<< setw(margin) << "" << "****************\n"
 			<< "\n"
 			<< "Option (1-3): ";
-			cin >> option2;	
+		cin >> option2;
+		if (cin.fail()) { // check whether last input was failed
+			cin.clear(); // Reset the input error status to no error
+			cin.ignore(255, '\n'); // ignore maximum of 255 characters,
+			 // or reached end of line.
+		}
+
 
 		int temp = mode, page = 0;
 
-		switch (option2){
-		case 1: 
+		switch (option2) {
+		case 1:
 			newPage();
 			mode = 3;
 
 			for (int pieceID = 0; pieceID < totalPiece; pieceID++)
-			puzzle1[pieceID].setPlaced(1);
+				puzzle1[pieceID].setPlaced(1);
 
 			gameBoard(puzzle1, page);
 			mode = temp; margin = 20;
@@ -934,11 +1016,17 @@ void feature() {
 		case 3:
 			playSavedPuzzle = 1;
 			game();
-		default:errorMsg("Please input a number from 1 to 3"); anyKey(); feature(); break;
+		default:
+			errorMsg("Please input a number from 1 to 3"); 
+			anyKey(); 
+			feature(); 
+			break;
 		}
-	}
 
-	return;
+	/*default:
+		errorMsg("Please input a number from 1 to 3");
+		feature();*/
+	}
 }
 
 //Credit
@@ -970,20 +1058,20 @@ void exits() {
 	cout << endl << endl << endl << endl << endl << endl << endl << endl;
 
 	char ch;
-	cout << "Close the game?" << endl 
+	cout << "Close the game?" << endl
 		<< "Enter y for yes, n for no. ";
 	cin >> ch;
 
-	if (ch == 'n' || ch == 'N'){
+	if (ch == 'n' || ch == 'N') {
 		cout << endl << endl << endl;
 		cout << "Game continued!" << endl << "Returning to Main menu...";
-		this_thread::sleep_for(chrono::milliseconds(3000)); 
+		this_thread::sleep_for(chrono::milliseconds(3000));
 		menu();
 	}
 	else if (ch == 'y' || ch == 'Y') exit(0); //Program terminates
-	else { 
+	else {
 		divder();
-		errorMsg("Please enter y for yes, n for no."); 
+		errorMsg("Please enter y for yes, n for no.");
 		anyKey();
 		exits();
 	}
