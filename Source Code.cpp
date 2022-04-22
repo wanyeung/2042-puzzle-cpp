@@ -891,6 +891,11 @@ void config() {
 			cout << "Input a new value for Range of random number (from 0-9):  " << endl
 				<< "from ";
 			cin >> rangeNum1;
+			if (cin.fail()) { // check whether last input was failed
+				cin.clear(); // Reset the input error status to no error
+				cin.ignore(255, '\n'); // ignore maximum of 255 characters,
+				 // or reached end of line.
+			}
 			cout << "to ";
 			cin >> rangeNum2;
 			if (cin.fail()) { // check whether last input was failed
@@ -907,7 +912,8 @@ void config() {
 			}
 			else
 				errorMsg("Please input a number from 0 to 9 for each number");
-		} while (rangeNum1 < 0 || rangeNum2 > 9 || rangeNum2 <= rangeNum1);
+			    
+		} while (rangeNum1 < 0 || rangeNum2 > 9 || rangeNum2 < rangeNum1);
 		break;
 
 	case 3: anyKey(); menu(); break;
@@ -927,9 +933,10 @@ void feature() {
 		<< setw(margin) << "" << "[1] Statistic\n"
 		<< setw(margin) << "" << "[2] Gamemode\n"
 		<< setw(margin) << "" << "[3] Play Saved Puzzles\n"
+		<< setw(margin) << "" << "[4] Return to main menu\n"
 		<< setw(margin) << "" << "****************\n"
 		<< "\n"
-		<< "Option (1-3): ";
+		<< "Option (1-4): ";
 	cin >> option;
 	if (cin.fail()) { // check whether last input was failed
 		cin.clear(); // Reset the input error status to no error
@@ -940,6 +947,17 @@ void feature() {
 	divder();
 
 	switch (option) {
+	
+	default:
+		errorMsg("Please input a number from 1 to 3");
+		feature();
+		break;
+
+	case 4:
+		anyKey();
+		menu();
+		break;
+
 	case 1:
 		newPage();
 		cout << setw(margin) << "" << "Puzzles played: " << countPlay << endl
@@ -1016,17 +1034,15 @@ void feature() {
 		case 3:
 			playSavedPuzzle = 1;
 			game();
+			break;
+
 		default:
 			errorMsg("Please input a number from 1 to 3"); 
 			anyKey(); 
-			feature(); 
 			break;
 		}
-
-	/*default:
-		errorMsg("Please input a number from 1 to 3");
-		feature();*/
 	}
+	
 }
 
 //Credit
