@@ -387,28 +387,6 @@ void game() {
 	//Player's Action
 	for (round, win; win != 1; round++) {
 
-		//Checking does the player placed all the pieces correctly
-		for (int pieceID = 0; pieceID < totalPiece; pieceID++) {
-			if (mode == 0 && puzzle[pieceID].getPlaced() == 1) {
-				win = 1;
-			}
-			else win = 0;
-
-			if (
-				mode == 1 &&
-				puzzle[pieceID].getPlaced() == 1 &&
-				puzzle[pieceID].getLetter() == solution[pieceID].getLetter() &&
-				puzzle[pieceID].getColumn() == solution[pieceID].getColumn() &&
-				puzzle[pieceID].getRow() == solution[pieceID].getRow() &&
-				puzzle[pieceID].getDigit('N') == solution[pieceID].getDigit('N') &&
-				puzzle[pieceID].getDigit('S') == solution[pieceID].getDigit('S') &&
-				puzzle[pieceID].getDigit('E') == solution[pieceID].getDigit('E') &&
-				puzzle[pieceID].getDigit('S') == solution[pieceID].getDigit('S')
-				) {
-				win = 1;
-				break;
-			}
-		}
 		gameBoard(puzzle, page);
 		cout << endl << endl;
 
@@ -585,6 +563,17 @@ void game() {
 						}
 						else errorMsg("Please Enter column from A to E in capital and row from 1 to 5.");
 					}
+					
+					if (win == 1) break;
+
+					//Checking does the player placed all the pieces correctly
+					for (int pieceID = 0; pieceID < totalPiece; pieceID++) {
+						if (mode == 0 && puzzle[pieceID].getPlaced() == 1) {
+							win = 1;
+						}
+						else win = 0;
+					}
+
 					gameBoard(puzzle, page);
 					break;
 
@@ -606,6 +595,23 @@ void game() {
 				if (puzzle[selectedPiece].rotate(direction) != 1) {
 					rotated = 1;
 					gameBoard(puzzle, page);
+				}
+			}
+
+			//Checking does the player placed all the pieces correctly
+			for (int pieceID = 0; pieceID < totalPiece; pieceID++) {
+				if (
+					mode == 1 &&
+					puzzle[pieceID].getPlaced() == 1 &&
+					puzzle[pieceID].getLetter() == solution[pieceID].getLetter() &&
+					puzzle[pieceID].getColumn() == solution[pieceID].getColumn() &&
+					puzzle[pieceID].getRow() == solution[pieceID].getRow() &&
+					puzzle[pieceID].getDigit('N') == solution[pieceID].getDigit('N') &&
+					puzzle[pieceID].getDigit('S') == solution[pieceID].getDigit('S') &&
+					puzzle[pieceID].getDigit('E') == solution[pieceID].getDigit('E') &&
+					puzzle[pieceID].getDigit('S') == solution[pieceID].getDigit('S')
+					) {
+					win = 1;
 				}
 			}
 		}
