@@ -271,7 +271,7 @@ void game() {
 	for (int pieceID = 0; pieceID < totalPiece; pieceID++)
 	{
 		int N = 0, S = 0, E = 0, W = 0;
-		
+
 		if (pieceID == 0) GenerateNSEW(N, S, E, W); //For piece1
 		else if (pieceID < 5) { //For the first pieces of the row 
 			GenerateNSEW(N, S, E, W);
@@ -544,37 +544,31 @@ void game() {
 						round++;
 
 						if (((int)column > 64 && (int)column < 70) && (row > 0 && row < 6)) { // bug label 5
-
+							int nowcolumn = column;
 							bool checkN = 1, checkS = 1, checkE = 1, checkW = 1;
-							int selectedColumn = puzzle[selectedPiece].getColumn();
 
 							for (int pieceID = 0; pieceID < totalPiece && pieceID != selectedPiece; pieceID++) {
 								int checkColumn = puzzle[pieceID].getColumn();
 
-								//Checking the touching side of Digit N of selected piece
-								if (puzzle[pieceID].getRow() != (puzzle[selectedPiece].getRow() - 1)
-									&& (checkColumn != selectedColumn)
-									&& (puzzle[pieceID].getPlaced() != 0 || puzzle[pieceID].getDigit('S') != puzzle[selectedPiece].getDigit('N')))
-									checkN = 0;
-
-								//Checking the touching side of Digit S of selected piece
-								if (puzzle[pieceID].getRow() != (puzzle[selectedPiece].getRow() + 1)
-									&& (checkColumn != selectedColumn)
-									&& (puzzle[pieceID].getPlaced() != 0 || puzzle[pieceID].getDigit('N') != puzzle[selectedPiece].getDigit('S')))
+								//Check Upper pieces
+								if (checkColumn == nowcolumn && puzzle[pieceID].getRow() == (row - 1)
+									&& puzzle[pieceID].getDigit('S') != puzzle[selectedPiece].getDigit('N'))
+								checkN = 0;
+								
+								//Check Below pieces
+								if (checkColumn == nowcolumn && puzzle[pieceID].getRow() == (row + 1)
+									&& puzzle[pieceID].getDigit('N') != puzzle[selectedPiece].getDigit('S'))
 									checkS = 0;
 
-
-								//Checking the toching side of Digit E of selected piece
-								if (puzzle[pieceID].getRow() != puzzle[selectedPiece].getRow()
-									&& (checkColumn != (selectedColumn - 1))
-									&& (puzzle[pieceID].getPlaced() != 0 || puzzle[pieceID].getDigit('W') != puzzle[selectedPiece].getDigit('E')))
-									checkE = 0;
-
-								//Checking the toching side of Digit W of selected piece
-								if (puzzle[pieceID].getRow() != puzzle[selectedPiece].getRow()
-									&& (checkColumn != (selectedColumn + 1))
-									&& (puzzle[pieceID].getPlaced() != 0 || puzzle[pieceID].getDigit('E') != puzzle[selectedPiece].getDigit('W')))
+								//Check Left pieces
+								if (checkColumn == (nowcolumn - 1) && puzzle[pieceID].getRow() == row
+									&& puzzle[pieceID].getDigit('E') != puzzle[selectedPiece].getDigit('W'))
 									checkW = 0;
+
+								//Check Right pieces
+								if (checkColumn == (nowcolumn + 1) && puzzle[pieceID].getRow() == row
+									&& puzzle[pieceID].getDigit('W') != puzzle[selectedPiece].getDigit('E'))
+									checkE = 0;
 							}
 
 							if (checkN == 1 && checkS == 1 && checkE == 1 && checkW == 1) {
@@ -683,7 +677,7 @@ void rules() {
 
 //Printing Game Board
 void gameBoard(Piece puzzle[], int& page) {
-	
+
 	if (mode != 3) newPage();
 	else margin = 20;
 
