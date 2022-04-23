@@ -125,7 +125,7 @@ public:
 		letter = l;
 	}
 
-	void setLocation(char c, int r, bool p) {
+	void setLocation(char c, int r, bool p) { //bug label 4
 		column = c;
 		row = r;
 		placed = p;
@@ -271,16 +271,16 @@ void game() {
 	for (int pieceID = 0; pieceID < totalPiece; pieceID++)
 	{
 		int N = 0, S = 0, E = 0, W = 0;
-
+		
 		if (pieceID == 0) GenerateNSEW(N, S, E, W); //For piece1
-		else if (pieceID % 5 != 0) { //For the first pieces of the row
+		else if (pieceID < 5) { //For the first pieces of the row 
 			GenerateNSEW(N, S, E, W);
 			W = solution[pieceID - 1].getDigit('E');
 		}
 		else { //Other pieces
 			GenerateNSEW(N, S, E, W);
 			N = solution[pieceID - 5].getDigit('S');
-			E = solution[pieceID - 1].getDigit('W');
+			W = solution[pieceID - 1].getDigit('E');
 		}
 
 		// Random repeatable letter excluding Q
@@ -388,7 +388,13 @@ void game() {
 
 		//Checking does the player placed all the pieces correctly
 		for (int pieceID = 0; pieceID < totalPiece; pieceID++) {
+			if (mode == 0 && puzzle[pieceID].getPlaced() == 1) {
+				win = 1;
+			}
+			else win = 0;
+
 			if (
+				mode == 1 &&
 				puzzle[pieceID].getPlaced() == 1 &&
 				puzzle[pieceID].getLetter() == solution[pieceID].getLetter() &&
 				puzzle[pieceID].getColumn() == solution[pieceID].getColumn() &&
@@ -402,7 +408,6 @@ void game() {
 				break;
 			}
 		}
-
 		gameBoard(puzzle, page);
 		cout << endl << endl;
 
@@ -528,7 +533,7 @@ void game() {
 						cout << endl << "Enter q to cancel, or Enter the column (A-E) to place piece" << index << " : ";
 						cin >> column;
 						if (column == 'Q' || column == 'q') break;
-						cout << "Enter the row to place piece" << index << " : ";
+						cout << "Enter the row to place piece " << index << " : ";
 						cin >> row;
 						if (cin.fail()) { // check whether last input was failed
 							cin.clear(); // Reset the input error status to no error
@@ -538,7 +543,7 @@ void game() {
 
 						round++;
 
-						if (((int)column > 64 && (int)column < 70) && (row > 0 && row < 6)) {
+						if (((int)column > 64 && (int)column < 70) && (row > 0 && row < 6)) { // bug label 5
 
 							bool checkN = 1, checkS = 1, checkE = 1, checkW = 1;
 							int selectedColumn = puzzle[selectedPiece].getColumn();
@@ -546,13 +551,13 @@ void game() {
 							for (int pieceID = 0; pieceID < totalPiece && pieceID != selectedPiece; pieceID++) {
 								int checkColumn = puzzle[pieceID].getColumn();
 
-								//Checking the toching side of Digit N of selected piece
+								//Checking the touching side of Digit N of selected piece
 								if (puzzle[pieceID].getRow() != (puzzle[selectedPiece].getRow() - 1)
 									&& (checkColumn != selectedColumn)
 									&& (puzzle[pieceID].getPlaced() != 0 || puzzle[pieceID].getDigit('S') != puzzle[selectedPiece].getDigit('N')))
 									checkN = 0;
 
-								//Checking the toching side of Digit S of selected piece
+								//Checking the touching side of Digit S of selected piece
 								if (puzzle[pieceID].getRow() != (puzzle[selectedPiece].getRow() + 1)
 									&& (checkColumn != selectedColumn)
 									&& (puzzle[pieceID].getPlaced() != 0 || puzzle[pieceID].getDigit('N') != puzzle[selectedPiece].getDigit('S')))
@@ -593,7 +598,7 @@ void game() {
 			}
 		}
 		//Interact with the selected piece which is in the not-yet-placecd list
-		else if (mode == 1) {
+		else if (mode == 1) { // bug label 3
 			bool rotated = 0;
 			char direction;
 			while (rotated != 1) {
@@ -662,7 +667,7 @@ void rules() {
 		<< setw(margin - 11) << "" << "Make sure all the touching digit of pieces are same. E.g." << endl << endl
 		<< setw(margin + 9) << "" << "piecesA" << "     " << "piecesB" << endl
 		<< setw(margin + 9) << "" << "   0   " << "     " << "   1   " << endl
-		<< setw(margin + 9) << "" << "  2A" << "\033[0;31m" << "3  " << "\033[0;37m"  << "     " << "\033[0;31m" << "  3" << "\033[0;37m" << "B4  " << endl
+		<< setw(margin + 9) << "" << "  2A" << "\033[0;31m" << "3  " << "\033[0;37m" << "     " << "\033[0;31m" << "  3" << "\033[0;37m" << "B4  " << endl
 		<< setw(margin + 9) << "" << "   5   " << "     " << "   6   " << endl;
 	cout << endl << setw(margin - 11) << "" << "Remember you can always quit the game by entering Q." << endl;
 	cout << endl << endl << endl
@@ -675,10 +680,16 @@ void rules() {
 	return;
 }
 
+
 //Printing Game Board
-void gameBoard(Piece puzzle[], int& page) { 
+void gameBoard(Piece puzzle[], int& page) {
+	
 	if (mode != 3) newPage();
 	else margin = 20;
+
+	cout << endl << setw(margin - 11) << "" << "Remember you can always quit the game by entering Q." << endl
+		<< setw(margin - 11) << "" << "Make sure all the pieces are placed from column A and row 1" << endl
+		<< setw(margin - 11) << "" << "Please rotate the pieces upside down if you cannot win" << endl;
 
 	//Header
 	if (mode != 3) {
@@ -703,7 +714,7 @@ void gameBoard(Piece puzzle[], int& page) {
 	cout << endl;
 
 	//Print from Row 1 of the game board to the last row (Row 14)
-	for (int r = 0, row = 1; row <= 5 && r < 15; r++) {
+	for (int r = 0, row = 1; row <= 5 && r < 15; r++) {             // bug label 2 
 		//r is the row for console, row is row of gameboard
 
 		// For the row without row number index 
@@ -849,11 +860,11 @@ void config() {
 	int option, pieceNum, rangeNum1, rangeNum2;
 	cout << setw(margin) << "" << "*** Settings Menu ***" << endl
 		<< setw(margin) << "" << "[1] Change Number of puzzle piece \n\t";
-	    SetConsoleTextAttribute(console_color, 8);
-		cout << "-> Current: " << totalPiece << "\033[0;37m" << endl
-			<< setw(margin) << "" << "[2] Change Range of random number \n\t";
-		SetConsoleTextAttribute(console_color, 8);
-		cout << "-> Current: " << digitFloor << " - " << digitCeiling << "\033[0;37m" << endl
+	SetConsoleTextAttribute(console_color, 8);
+	cout << "-> Current: " << totalPiece << "\033[0;37m" << endl
+		<< setw(margin) << "" << "[2] Change Range of random number \n\t";
+	SetConsoleTextAttribute(console_color, 8);
+	cout << "-> Current: " << digitFloor << " - " << digitCeiling << "\033[0;37m" << endl
 		<< setw(margin) << "" << "[3] Return to Main Menu" << endl
 		<< setw(margin) << "" << "***************************" << endl << endl
 		<< setw(margin) << "" << "Option (1-3): ";
@@ -912,7 +923,7 @@ void config() {
 			}
 			else
 				errorMsg("Please input a number from 0 to 9 for each number");
-			    
+
 		} while (rangeNum1 < 0 || rangeNum2 > 9 || rangeNum2 < rangeNum1);
 		break;
 
@@ -947,7 +958,7 @@ void feature() {
 	divder();
 
 	switch (option) {
-	
+
 	default:
 		errorMsg("Please input a number from 1 to 3");
 		feature();
@@ -1014,7 +1025,7 @@ void feature() {
 			mode = 3;
 
 			gameBoard(puzzle1, page);
-			mode = temp; 
+			mode = temp;
 			cout << endl << endl << endl << setw(0) << "";
 			anyKey(); feature();
 			break;
@@ -1023,23 +1034,23 @@ void feature() {
 			newPage();
 			mode = 3;
 			gameBoard(sol_puzzle1, page);
-			mode = temp; 
+			mode = temp;
 			cout << endl << endl << endl << setw(0) << "";
 			anyKey(); feature();
 			break;
 
 		case 3:
 			playSavedPuzzle = 1; //bug label
-			game(); 
+			game();
 			break;
 
 		default:
-			errorMsg("Please input a number from 1 to 3"); 
-			anyKey(); 
+			errorMsg("Please input a number from 1 to 3");
+			anyKey();
 			break;
 		}
 	}
-	
+
 }
 
 //Credit
