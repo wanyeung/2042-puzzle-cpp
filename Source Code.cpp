@@ -577,7 +577,7 @@ void game() {
 								puzzle[selectedPiece].setLocation(column, row, 1);
 								unselected = 1;
 							}
-							else errorMsg("The touching side is not the same");
+							else errorMsg("The touching side is not the same"); // bug label 1 
 						}
 						else errorMsg("Please Enter column from A to E in capital and row from 1 to 5.");
 					}
@@ -676,9 +676,9 @@ void rules() {
 }
 
 //Printing Game Board
-void gameBoard(Piece puzzle[], int& page) {
+void gameBoard(Piece puzzle[], int& page) { 
 	if (mode != 3) newPage();
-	else margin = 30;
+	else margin = 20;
 
 	//Header
 	if (mode != 3) {
@@ -1013,11 +1013,8 @@ void feature() {
 			newPage();
 			mode = 3;
 
-			for (int pieceID = 0; pieceID < totalPiece; pieceID++)
-				puzzle1[pieceID].setPlaced(1);
-
 			gameBoard(puzzle1, page);
-			mode = temp; margin = 20;
+			mode = temp; 
 			cout << endl << endl << endl << setw(0) << "";
 			anyKey(); feature();
 			break;
@@ -1026,14 +1023,14 @@ void feature() {
 			newPage();
 			mode = 3;
 			gameBoard(sol_puzzle1, page);
-			mode = temp; margin = 20;
+			mode = temp; 
 			cout << endl << endl << endl << setw(0) << "";
 			anyKey(); feature();
 			break;
 
 		case 3:
-			playSavedPuzzle = 1;
-			game();
+			playSavedPuzzle = 1; //bug label
+			game(); 
 			break;
 
 		default:
