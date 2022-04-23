@@ -421,7 +421,8 @@ void game() {
 					<< setw(margin) << "" << "Enter [1] to select a pieces" << endl
 					<< setw(margin) << "" << "Enter [2] to go to next page" << endl
 					<< setw(margin) << "" << "Enter [3] to go to previous page" << endl
-					<< setw(margin) << "" << "Option (1-3): ";
+					<< setw(margin) << "" << "Enter [4] to show rule" << endl
+					<< setw(margin) << "" << "Option (1-4): ";
 				cin >> option;
 				if (cin.fail()) { // check whether last input was failed
 					cin.clear(); // Reset the input error status to no error
@@ -439,6 +440,9 @@ void game() {
 					page -= 1;
 					if (page < 1) page = 1;
 					gameBoard(puzzle, page); break;
+				case 4:
+					rules();
+					break;
 				default: errorMsg("Please enter a number from 1 to 3"); break;
 				}
 			}
@@ -663,7 +667,10 @@ void rules() {
 		<< setw(margin + 9) << "" << "   0   " << "     " << "   1   " << endl
 		<< setw(margin + 9) << "" << "  2A" << "\033[0;31m" << "3  " << "\033[0;37m" << "     " << "\033[0;31m" << "  3" << "\033[0;37m" << "B4  " << endl
 		<< setw(margin + 9) << "" << "   5   " << "     " << "   6   " << endl;
-	cout << endl << setw(margin - 11) << "" << "Remember you can always quit the game by entering Q." << endl;
+	cout << setw(margin - 11) << "" << "Remember you can always quit the game by entering Q." << endl
+		<< setw(margin - 11) << "" << "Make sure all the pieces are placed from column A and row 1" << endl
+		<< setw(margin - 11) << "" << "Please rotate the pieces upside down if you cannot win" << endl;
+
 	cout << endl << endl << endl
 		<< setw(margin * 2 - 4) << "" << "Enjoy!" << endl << endl;
 
@@ -680,10 +687,6 @@ void gameBoard(Piece puzzle[], int& page) {
 
 	if (mode != 3) newPage();
 	else margin = 20;
-
-	cout << setw(margin - 11) << "" << "Remember you can always quit the game by entering Q." << endl
-		<< setw(margin - 11) << "" << "Make sure all the pieces are placed from column A and row 1" << endl
-		<< setw(margin - 11) << "" << "Please rotate the pieces upside down if you cannot win" << endl;
 
 	//Header
 	if (mode != 3) {
