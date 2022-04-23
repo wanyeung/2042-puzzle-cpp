@@ -354,6 +354,7 @@ void game() {
 
 		puzzle[pieceID].setPlaced(0);
 		solution[pieceID].setLocation(column, row, 1);
+		if(mode==1) puzzle[pieceID].setLocation(column, row, 1);
 
 		/* //For Debugging
 		   cout << pieceID << " Column: " << puzzle[pieceID].getColumn() << " Row: " << puzzle[pieceID].getRow()
@@ -983,7 +984,8 @@ void feature() {
 			<< setw(margin) << "" << "Type y to change to 'Easy' Mode, type anything else to cancel: ";
 		cin >> option1;
 
-		if (option1 == 'y' || option1 == 'Y') mode = 1;
+		if (option1 == 'y' || option1 == 'Y') 
+			mode = 1; 
 
 		menu();
 		break;
