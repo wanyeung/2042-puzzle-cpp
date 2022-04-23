@@ -666,7 +666,7 @@ void rules() {
 		<< setw(margin + 9) << "" << "piecesA" << "     " << "piecesB" << endl
 		<< setw(margin + 9) << "" << "   0   " << "     " << "   1   " << endl
 		<< setw(margin + 9) << "" << "  2A" << "\033[0;31m" << "3  " << "\033[0;37m" << "     " << "\033[0;31m" << "  3" << "\033[0;37m" << "B4  " << endl
-		<< setw(margin + 9) << "" << "   5   " << "     " << "   6   " << endl;
+		<< setw(margin + 9) << "" << "   5   " << "     " << "   6   " << endl << endl;
 	cout << setw(margin - 11) << "" << "Remember you can always quit the game by entering Q." << endl
 		<< setw(margin - 11) << "" << "Make sure all the pieces are placed from column A and row 1" << endl
 		<< setw(margin - 11) << "" << "Please rotate the pieces upside down if you cannot win" << endl;
